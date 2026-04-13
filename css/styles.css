@@ -491,7 +491,7 @@ body.music-on .bg-circuit {
   position: absolute;
   border-radius: 50%;
   filter: blur(140px);
-  opacity: 0.12;
+  opacity: 0.18;
   transition: transform 0.3s ease-out;
   will-change: transform;
 }
@@ -573,7 +573,6 @@ body.music-on .bg-noise {
   .bg-noise { opacity: 0.038; }
   .bg-mouse-orbs .bg-orb {
     transition: none !important;
-    transform: none !important;
   }
   .stagger-init .stagger-top-controls,
   .stagger-init .hero-head .eyebrow,

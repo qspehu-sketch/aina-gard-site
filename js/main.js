@@ -123,71 +123,110 @@
     audioEl.volume = 0.52;
   }
 
-  function initThreadsCursorParallax() {
-    var shift = document.querySelector(".bg-threads-shift");
-    if (!shift) return;
-    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var maxX = reduce ? 14 : 72;
-    var maxY = reduce ? 10 : 54;
-    document.addEventListener("mousemove", function (e) {
-      var nx = (e.clientX / window.innerWidth - 0.5) * 2;
-      var ny = (e.clientY / window.innerHeight - 0.5) * 2;
-      shift.style.transform =
-        "translate(" + nx * maxX + "px, " + ny * maxY + "px)";
-    });
+  function prefersReducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
-  function initOrbCursorParallax() {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  /** Нити + orb: один pointermove (мышь / тач / перо), работает и при «уменьшить движение» — слабее амплитуда */
+  function initGlobalPointerAmbient() {
+    var shift = document.querySelector(".bg-threads-shift");
     var o1 = document.querySelector(".bg-orb-1");
     var o2 = document.querySelector(".bg-orb-2");
-    if (!o1 || !o2) return;
-    document.addEventListener("mousemove", function (e) {
-      var x = (e.clientX / window.innerWidth - 0.5) * 2;
-      var y = (e.clientY / window.innerHeight - 0.5) * 2;
-      o1.style.transform = "translate(" + x * 30 + "px, " + y * 20 + "px)";
-      o2.style.transform = "translate(" + x * -20 + "px, " + y * -15 + "px)";
-    });
+    if (!shift && !o1 && !o2) return;
+
+    var reduce = prefersReducedMotion();
+    var tMul = reduce ? 0.38 : 1;
+    var oMul = reduce ? 0.4 : 1;
+
+    function applyFromPoint(clientX, clientY) {
+      var w = window.innerWidth || 1;
+      var h = window.innerHeight || 1;
+      var nx = (clientX / w - 0.5) * 2;
+      var ny = (clientY / h - 0.5) * 2;
+
+      if (shift) {
+        shift.style.transform =
+          "translate(" +
+          nx * 72 * tMul +
+          "px, " +
+          ny * 54 * tMul +
+          "px)";
+      }
+      if (o1 && o2) {
+        o1.style.transform =
+          "translate(" + nx * 30 * oMul + "px, " + ny * 20 * oMul + "px)";
+        o2.style.transform =
+          "translate(" + nx * -20 * oMul + "px, " + ny * -15 * oMul + "px)";
+      }
+    }
+
+    function onPointer(e) {
+      if (typeof e.clientX === "number" && typeof e.clientY === "number") {
+        applyFromPoint(e.clientX, e.clientY);
+      }
+    }
+
+    window.addEventListener("pointermove", onPointer, { passive: true });
+
+    applyFromPoint(window.innerWidth * 0.5, window.innerHeight * 0.45);
   }
 
+  /** Glow + 3D-tilt карточек; при reduced — слабее, но не отключено */
   function initCardWowEffects() {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var reduce = prefersReducedMotion();
+    var maxTilt = reduce ? 2 : 5;
+    var glowHi = reduce ? "0.72" : "1";
+
     document.querySelectorAll("[data-card]").forEach(function (card) {
       var tilt = card.querySelector(".card-tilt");
+      var front = card.querySelector(".card-front");
       if (!tilt) return;
 
       function resetTilt() {
         tilt.style.transform = "";
       }
 
+      function setGlowPos(px, py) {
+        var x = px + "px";
+        var y = py + "px";
+        card.style.setProperty("--glow-x", x);
+        card.style.setProperty("--glow-y", y);
+        if (front) {
+          front.style.setProperty("--glow-x", x);
+          front.style.setProperty("--glow-y", y);
+        }
+      }
+
       card.addEventListener("mouseenter", function () {
         if (!card.classList.contains("is-flipped")) {
-          card.style.setProperty("--glow-opacity", "1");
+          card.style.setProperty("--glow-opacity", glowHi);
+          if (front) front.style.setProperty("--glow-opacity", glowHi);
         }
       });
 
       card.addEventListener("mouseleave", function () {
         card.style.setProperty("--glow-opacity", "0");
+        if (front) front.style.setProperty("--glow-opacity", "0");
         resetTilt();
       });
 
-      card.addEventListener("mousemove", function (e) {
+      card.addEventListener("pointermove", function (e) {
         if (card.classList.contains("is-flipped")) {
           resetTilt();
           return;
         }
         var rect = card.getBoundingClientRect();
+        if (rect.width < 4 || rect.height < 4) return;
         var px = e.clientX - rect.left;
         var py = e.clientY - rect.top;
-        card.style.setProperty("--glow-x", px + "px");
-        card.style.setProperty("--glow-y", py + "px");
+        setGlowPos(px, py);
 
         var nx = (e.clientX - rect.left) / rect.width;
         var ny = (e.clientY - rect.top) / rect.height;
         var tiltX = (ny - 0.5) * -10;
         var tiltY = (nx - 0.5) * 10;
-        tiltX = Math.max(-5, Math.min(5, tiltX));
-        tiltY = Math.max(-5, Math.min(5, tiltY));
+        tiltX = Math.max(-maxTilt, Math.min(maxTilt, tiltX));
+        tiltY = Math.max(-maxTilt, Math.min(maxTilt, tiltY));
         tilt.style.transform =
           "perspective(1000px) rotateX(" +
           tiltX +
@@ -282,12 +321,16 @@
       if (e.target.closest(".card-flip-back")) {
         card.classList.remove("is-flipped");
         if (tilt) tilt.style.transform = "";
+        var fr = card.querySelector(".card-front");
+        if (fr) fr.style.setProperty("--glow-opacity", "0");
         return;
       }
       if (card.classList.contains("is-flipped")) return;
       card.classList.add("is-flipped");
       if (tilt) tilt.style.transform = "";
       card.style.setProperty("--glow-opacity", "0");
+      var fr = card.querySelector(".card-front");
+      if (fr) fr.style.setProperty("--glow-opacity", "0");
     });
   });
 
@@ -299,8 +342,7 @@
     });
   }
 
-  initThreadsCursorParallax();
-  initOrbCursorParallax();
+  initGlobalPointerAmbient();
   initCardWowEffects();
   applyLinks();
   setLang(lang);
