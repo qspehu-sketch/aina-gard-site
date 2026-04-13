@@ -19,9 +19,13 @@
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <div class="page" id="page">
+  <div class="page stagger-init" id="page">
     <div class="bg-base" aria-hidden="true"></div>
     <div class="bg-photo" aria-hidden="true"></div>
+    <div class="bg-mouse-orbs" aria-hidden="true">
+      <div class="bg-orb bg-orb-1"></div>
+      <div class="bg-orb bg-orb-2"></div>
+    </div>
     <div class="bg-neon-lights" aria-hidden="true">
       <div class="bg-neon-lights__orb bg-neon-lights__orb--a"></div>
       <div class="bg-neon-lights__orb bg-neon-lights__orb--b"></div>
@@ -72,7 +76,7 @@
       <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
     </audio>
 
-    <div class="top-controls">
+    <div class="top-controls stagger-top-controls">
       <button type="button" class="ctrl-btn" id="btnSound" aria-pressed="false" aria-label="Включить фоновый звук">
         <span id="soundLabel" data-i18n="sound_on">🔊 Включить звук</span>
       </button>
@@ -87,7 +91,7 @@
             <h1 class="name" data-i18n="hero_name">Айна Гард</h1>
             <p class="sub-title" data-i18n="subtitle">AI-решения для бренда, бизнеса, творчества и жизни</p>
 
-            <div class="actions">
+            <div class="actions stagger-actions">
               <a class="btn btn-primary" data-link="tg" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer">
                 <span data-i18n="btn_diag">Бесплатная консультация</span>
               </a>
@@ -98,7 +102,8 @@
           </header>
 
           <section class="scene scene--quad" aria-label="Услуги">
-            <article class="card card--quad" data-card>
+            <article class="card card--quad stagger-card-1" data-card>
+              <div class="card-tilt">
               <div class="card-inner">
                 <div class="card-face card-front">
                   <button type="button" class="flip-btn">
@@ -124,9 +129,10 @@
                   </div>
                 </div>
               </div>
+              </div>
             </article>
 
-            <div class="quad-portrait-wrap">
+            <div class="quad-portrait-wrap stagger-portrait">
               <div class="portrait-card portrait-card--quad" id="portraitCard">
                 <div class="portrait-inner">
                   <div class="portrait-face portrait-front">
@@ -148,7 +154,8 @@
               </div>
             </div>
 
-            <article class="card card--quad" data-card>
+            <article class="card card--quad stagger-card-2" data-card>
+              <div class="card-tilt">
               <div class="card-inner">
                 <div class="card-face card-front">
                   <button type="button" class="flip-btn">
@@ -174,9 +181,11 @@
                   </div>
                 </div>
               </div>
+              </div>
             </article>
 
-            <article class="card card--quad" data-card>
+            <article class="card card--quad stagger-card-3" data-card>
+              <div class="card-tilt">
               <div class="card-inner">
                 <div class="card-face card-front">
                   <button type="button" class="flip-btn">
@@ -202,9 +211,11 @@
                   </div>
                 </div>
               </div>
+              </div>
             </article>
 
-            <article class="card card--quad" data-card>
+            <article class="card card--quad stagger-card-4" data-card>
+              <div class="card-tilt">
               <div class="card-inner">
                 <div class="card-face card-front">
                   <button type="button" class="flip-btn">
@@ -229,6 +240,7 @@
                     <button type="button" class="card-flip-back" aria-label="Закрыть"></button>
                   </div>
                 </div>
+              </div>
               </div>
             </article>
           </section>

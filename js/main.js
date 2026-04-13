@@ -137,6 +137,67 @@
     });
   }
 
+  function initOrbCursorParallax() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var o1 = document.querySelector(".bg-orb-1");
+    var o2 = document.querySelector(".bg-orb-2");
+    if (!o1 || !o2) return;
+    document.addEventListener("mousemove", function (e) {
+      var x = (e.clientX / window.innerWidth - 0.5) * 2;
+      var y = (e.clientY / window.innerHeight - 0.5) * 2;
+      o1.style.transform = "translate(" + x * 30 + "px, " + y * 20 + "px)";
+      o2.style.transform = "translate(" + x * -20 + "px, " + y * -15 + "px)";
+    });
+  }
+
+  function initCardWowEffects() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    document.querySelectorAll("[data-card]").forEach(function (card) {
+      var tilt = card.querySelector(".card-tilt");
+      if (!tilt) return;
+
+      function resetTilt() {
+        tilt.style.transform = "";
+      }
+
+      card.addEventListener("mouseenter", function () {
+        if (!card.classList.contains("is-flipped")) {
+          card.style.setProperty("--glow-opacity", "1");
+        }
+      });
+
+      card.addEventListener("mouseleave", function () {
+        card.style.setProperty("--glow-opacity", "0");
+        resetTilt();
+      });
+
+      card.addEventListener("mousemove", function (e) {
+        if (card.classList.contains("is-flipped")) {
+          resetTilt();
+          return;
+        }
+        var rect = card.getBoundingClientRect();
+        var px = e.clientX - rect.left;
+        var py = e.clientY - rect.top;
+        card.style.setProperty("--glow-x", px + "px");
+        card.style.setProperty("--glow-y", py + "px");
+
+        var nx = (e.clientX - rect.left) / rect.width;
+        var ny = (e.clientY - rect.top) / rect.height;
+        var tiltX = (ny - 0.5) * -10;
+        var tiltY = (nx - 0.5) * 10;
+        tiltX = Math.max(-5, Math.min(5, tiltX));
+        tiltY = Math.max(-5, Math.min(5, tiltY));
+        tilt.style.transform =
+          "perspective(1000px) rotateX(" +
+          tiltX +
+          "deg) rotateY(" +
+          tiltY +
+          "deg)";
+      });
+    });
+  }
+
   function applyLinks() {
     document.querySelectorAll("[data-link]").forEach(function (el) {
       var k = el.getAttribute("data-link");
@@ -217,12 +278,16 @@
   document.querySelectorAll("[data-card]").forEach(function (card) {
     card.addEventListener("click", function (e) {
       if (e.target.closest("a[href]")) return;
+      var tilt = card.querySelector(".card-tilt");
       if (e.target.closest(".card-flip-back")) {
         card.classList.remove("is-flipped");
+        if (tilt) tilt.style.transform = "";
         return;
       }
       if (card.classList.contains("is-flipped")) return;
       card.classList.add("is-flipped");
+      if (tilt) tilt.style.transform = "";
+      card.style.setProperty("--glow-opacity", "0");
     });
   });
 
@@ -235,6 +300,8 @@
   }
 
   initThreadsCursorParallax();
+  initOrbCursorParallax();
+  initCardWowEffects();
   applyLinks();
   setLang(lang);
 })();
