@@ -16,7 +16,7 @@
   --glow-pink: 0 0 50px rgba(240, 168, 216, 0.2);
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --radius: clamp(20px, 2.2vw, 26px);
-  --container: 1180px;
+  --container: 1480px;
 }
 
 /* Свечение сильнее при включённой музыке (body.music-on) */
@@ -570,10 +570,14 @@ body.music-on .bg-noise {
 
 /* ===== Layout ===== */
 .container {
-  width: min(calc(100% - 28px), var(--container));
+  width: min(calc(100% - 16px), var(--container));
   margin-inline: auto;
   position: relative;
   z-index: 6;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .hero {
@@ -591,13 +595,16 @@ body.music-on .bg-noise {
 .hero-inner {
   display: flex;
   flex-direction: column;
-  gap: clamp(8px, 2vh, 16px);
+  gap: clamp(6px, 1.4vh, 14px);
+  flex: 1;
+  min-height: 0;
 }
 
 .hero-head {
   text-align: center;
   max-width: 42rem;
   margin-inline: auto;
+  flex-shrink: 0;
 }
 
 .eyebrow {
@@ -702,37 +709,46 @@ body.music-on .bg-noise {
 
 .btn:active { transform: translateY(0); transition-duration: 0.1s; }
 
-/* ===== Scene ===== */
+/* ===== Scene: сетка 2×2 + портрет по центру (как на макете) ===== */
 .scene {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(14px, 2.5vw, 32px);
-  max-width: 1140px;
-  margin-inline: auto;
   width: 100%;
-  padding-block: 6px;
+  margin-inline: auto;
+  padding-block: 4px;
 }
 
-.scene-side {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: clamp(20px, 3.5vh, 34px);
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 300px;
+.scene--quad {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(10px, 1.4vw, 20px);
+  flex: 1 1 auto;
+  min-height: min(52vh, 560px);
+  max-height: min(72vh, calc(100dvh - 200px));
+  width: 100%;
+  max-width: 100%;
 }
 
-.scene-side--left { align-items: flex-end; }
-.scene-side--right { align-items: flex-start; }
+.quad-portrait-wrap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  width: min(32vw, 400px);
+  min-width: 200px;
+  max-width: min(92vw, 420px);
+  aspect-ratio: 1;
+  pointer-events: none;
+}
 
-.scene-center {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.quad-portrait-wrap .portrait-card {
+  pointer-events: auto;
+  filter: drop-shadow(0 0 40px rgba(0, 0, 0, 0.55)) drop-shadow(var(--glow-blue)) drop-shadow(var(--glow-pink));
+}
+
+.quad-portrait-wrap .portrait-front img {
+  object-position: center 18%;
 }
 
 /* Портрет: скругление как карточки + glow */
@@ -744,6 +760,14 @@ body.music-on .bg-noise {
   cursor: pointer;
   filter: drop-shadow(var(--glow-blue)) drop-shadow(var(--glow-pink));
   transition: transform 0.35s var(--ease), filter 0.5s var(--ease);
+}
+
+.portrait-card--quad {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  aspect-ratio: 1;
+  margin: 0 auto;
 }
 
 .portrait-card:not(.is-flipped):hover {
@@ -952,6 +976,53 @@ body.music-on .card:not(.is-flipped):hover {
   filter: drop-shadow(0 16px 40px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 45px rgba(110, 200, 255, 0.35));
 }
 
+.scene--quad .card {
+  max-width: none;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.scene--quad .card-front {
+  padding: 0;
+}
+
+.scene--quad .flip-btn {
+  height: 100%;
+  min-height: 100%;
+  justify-content: space-between;
+  padding: clamp(14px, 2vw, 32px) clamp(16px, 2.5vw, 40px);
+  text-align: center;
+}
+
+.scene--quad .card-label {
+  font-size: clamp(0.7rem, 1vw, 0.82rem);
+  letter-spacing: 0.24em;
+}
+
+.scene--quad .card-title {
+  font-size: clamp(1.35rem, 3.2vw, 2.65rem);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 1.08;
+  text-transform: uppercase;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-block: auto;
+  padding-inline: 0.15em;
+  max-width: 95%;
+}
+
+.scene--quad .card-tap-hint {
+  margin-top: 0;
+  font-size: clamp(0.72rem, 1.05vw, 0.86rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.48);
+}
+
 .card-inner {
   position: relative;
   width: 100%;
@@ -1127,38 +1198,40 @@ body.music-on .card:not(.is-flipped):hover {
 
 /* ===== Адаптив ===== */
 @media (max-width: 960px) {
-  .scene {
+  .scene--quad {
+    display: flex;
     flex-direction: column;
-    gap: clamp(14px, 3vh, 24px);
+    max-height: none;
+    min-height: 0;
+    gap: 14px;
   }
-  .scene-center { order: -1; }
-  .portrait-card {
-    width: min(280px, 82vw);
-    max-height: min(48vh, 400px);
+  .quad-portrait-wrap {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    order: -1;
+    width: min(300px, 88vw);
+    max-width: 360px;
+    margin: 0 auto 8px;
+    aspect-ratio: 1;
   }
-  .scene-side {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    max-width: 100%;
-    width: 100%;
-    align-items: start;
+  .scene--quad .card {
+    min-height: 220px;
+    height: auto;
+    aspect-ratio: auto;
   }
-  .scene-side--left,
-  .scene-side--right { align-items: stretch; }
-  .scene-side .card {
-    max-width: none;
-    width: 100%;
+  .scene--quad .card-title {
+    font-size: clamp(1.2rem, 5vw, 1.85rem);
   }
 }
 
 @media (max-width: 600px) {
   .top-controls { top: 8px; right: 8px; }
-  .scene-side {
-    grid-template-columns: 1fr;
-  }
   .name { font-size: 1.85rem; }
   .actions { flex-direction: column; width: 100%; }
   .btn { width: 100%; }
-  .card { height: 268px; }
+  .scene--quad .card {
+    min-height: 200px;
+  }
 }

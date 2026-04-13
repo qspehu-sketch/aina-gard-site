@@ -29,7 +29,7 @@
       role3: "Вайб-кодер",
       contact: "Связаться",
       btn_card: "На диагностику",
-      c1_title: "Личный<br />бренд",
+      c1_title: "Личный бренд",
       c1_back_title: "Личный бренд",
       c1_price: "от 5000 ₽",
       c1_f1: "Нейрофотосессии",
@@ -82,7 +82,7 @@
       role3: "Vibe coder",
       contact: "Contact",
       btn_card: "Book a call",
-      c1_title: "Personal<br />brand",
+      c1_title: "Personal brand",
       c1_back_title: "Personal brand",
       c1_price: "from 5000 ₽",
       c1_f1: "Neuro photo sessions",
@@ -142,11 +142,7 @@
     document.querySelectorAll("[data-i18n]").forEach(function (el) {
       var key = el.getAttribute("data-i18n");
       if (t[key] === undefined) return;
-      if (key === "c1_title") {
-        el.innerHTML = t.c1_title;
-      } else {
-        el.textContent = t[key];
-      }
+      el.textContent = t[key];
     });
 
     var img = document.getElementById("portraitImg");
