@@ -12,14 +12,13 @@
       hero_name: "Айна Гард",
       eyebrow: "Проводник в мир нейросетей",
       subtitle: "AI-решения для бренда, бизнеса, творчества и жизни",
-      btn_diag: "Бесплатная диагностика",
+      btn_diag: "Бесплатная консультация",
       btn_portfolio: "Портфолио",
       sound_on: "🔊 Включить звук",
       sound_off: "🔇 Выключить звук",
       ariaSoundOn: "Включить фоновый звук",
       ariaSoundOff: "Выключить фоновый звук",
       tap_hint: "Нажмите",
-      portrait_hint: "Нажмите",
       card_dir: "Направление",
       back: "Назад",
       about_kicker: "Обо мне",
@@ -28,10 +27,10 @@
       role2: "Промт-инженер",
       role3: "Вайб-кодер",
       contact: "Связаться",
-      btn_card: "На диагностику",
+      btn_card: "Бесплатная консультация →",
       c1_title: "Личный бренд",
       c1_back_title: "Личный бренд",
-      c1_price: "от 5000 ₽",
+      c1_price: "от 5 000 ₽",
       c1_f1: "Нейрофотосессии",
       c1_f2: "Цифровой аватар",
       c1_f3: "Нейровидео",
@@ -45,20 +44,20 @@
       c2_f4: "Приложения под задачу",
       c3_title: "Творчество",
       c3_back_title: "Творчество",
-      c3_price: "от 3000 ₽",
+      c3_price: "от 3 000 ₽",
       c3_f1: "Нейродизайн",
       c3_f2: "Изображения и видео",
       c3_f3: "Песни и музыка",
       c3_f4: "Креативные концепции",
       c4_title: "Жизнь",
       c4_back_title: "Жизнь",
-      c4_price: "от 3000 ₽",
+      c4_price: "от 3 000 ₽",
       c4_f1: "AI для повседневных задач",
       c4_f2: "Идеи и планирование",
       c4_f3: "Личные проекты",
       c4_f4: "Умные помощники",
       meta_description:
-        "Айна Гард — AI Creator, промт-инженер и вайб-кодер. AI-решения для бренда, бизнеса и творчества. Бесплатная диагностика в Telegram."
+        "Айна Гард — AI Creator, промт-инженер и вайб-кодер. AI-решения для бренда, бизнеса и творчества. Бесплатная консультация в Telegram."
     },
     en: {
       doc_title: "Aina Gard — AI Creator",
@@ -72,7 +71,6 @@
       ariaSoundOn: "Enable ambient sound",
       ariaSoundOff: "Disable ambient sound",
       tap_hint: "Tap",
-      portrait_hint: "Tap",
       card_dir: "Focus",
       back: "Back",
       about_kicker: "About",
@@ -81,7 +79,7 @@
       role2: "Prompt engineer",
       role3: "Vibe coder",
       contact: "Contact",
-      btn_card: "Book a call",
+      btn_card: "Free consultation →",
       c1_title: "Personal brand",
       c1_back_title: "Personal brand",
       c1_price: "from 5000 ₽",
@@ -205,7 +203,12 @@
   document.querySelectorAll("[data-card]").forEach(function (card) {
     card.addEventListener("click", function (e) {
       if (e.target.closest("a[href]")) return;
-      card.classList.toggle("is-flipped");
+      if (e.target.closest(".card-flip-back")) {
+        card.classList.remove("is-flipped");
+        return;
+      }
+      if (card.classList.contains("is-flipped")) return;
+      card.classList.add("is-flipped");
     });
   });
 
