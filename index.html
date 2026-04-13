@@ -3,176 +3,233 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Айна Гард — AI Creator. AI-решения для бренда, бизнеса, творчества и жизни. Бесплатная диагностика в Telegram." />
-  <meta name="theme-color" content="#07071a" />
+  <meta name="description" id="metaDesc" content="Айна Гард — AI Creator, промт-инженер и вайб-кодер. AI-решения для бренда, бизнеса и творчества. Бесплатная диагностика в Telegram." />
+  <meta name="theme-color" content="#030208" />
   <meta property="og:title" content="Айна Гард — AI Creator" />
-  <meta property="og:description" content="AI-решения для бренда, бизнеса, творчества и жизни. Проводник в мир нейросетей." />
+  <meta property="og:description" id="ogDesc" content="AI-решения для бренда, бизнеса, творчества и жизни. Проводник в мир нейросетей." />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="ru_RU" />
   <meta name="twitter:card" content="summary_large_image" />
-  <title>Айна Гард — AI Creator</title>
+  <title data-i18n="doc_title">Айна Гард — AI Creator</title>
 
   <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Unbounded:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <div class="bg-layer" aria-hidden="true">
-    <div class="bg-orb bg-orb--violet"></div>
-    <div class="bg-orb bg-orb--rose"></div>
-    <div class="bg-grid"></div>
-  </div>
+  <div class="page" id="page">
+    <div class="bg-base" aria-hidden="true"></div>
+    <div class="bg-photo" aria-hidden="true"></div>
+    <div class="bg-neon-lights" aria-hidden="true">
+      <div class="bg-neon-lights__orb bg-neon-lights__orb--a"></div>
+      <div class="bg-neon-lights__orb bg-neon-lights__orb--b"></div>
+      <div class="bg-neon-lights__orb bg-neon-lights__orb--c"></div>
+    </div>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-circuit" aria-hidden="true"></div>
+    <div class="bg-threads" aria-hidden="true">
+      <svg class="bg-threads-svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="threadGradA" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#4a9fd9" stop-opacity="0" />
+            <stop offset="35%" stop-color="#6ec8ff" stop-opacity="0.85" />
+            <stop offset="70%" stop-color="#c4a8ff" stop-opacity="0.55" />
+            <stop offset="100%" stop-color="#f0a8d8" stop-opacity="0" />
+          </linearGradient>
+          <linearGradient id="threadGradB" x1="100%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#f0a8d8" stop-opacity="0" />
+            <stop offset="45%" stop-color="#e879a8" stop-opacity="0.65" />
+            <stop offset="100%" stop-color="#6ec8ff" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+        <g class="bg-threads-group">
+          <path class="bg-thread-path" d="M -120 280 Q 420 80 960 420 T 2040 300" fill="none" stroke="url(#threadGradA)" stroke-width="1.35" stroke-linecap="round" opacity="0.55">
+            <animate attributeName="opacity" values="0.4;0.72;0.46;0.68;0.42;0.75;0.4" keyTimes="0;0.16;0.32;0.48;0.64;0.82;1" dur="22s" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1" />
+          </path>
+          <path class="bg-thread-path bg-thread-path--slow" d="M -80 720 Q 640 920 1180 580 T 2100 680" fill="none" stroke="url(#threadGradB)" stroke-width="1.1" stroke-linecap="round" opacity="0.45">
+            <animate attributeName="opacity" values="0.32;0.58;0.38;0.62;0.35;0.55;0.32" keyTimes="0;0.18;0.35;0.52;0.68;0.86;1" dur="28s" begin="-4s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" />
+          </path>
+          <path class="bg-thread-path" d="M 520 -60 Q 320 380 680 1120" fill="none" stroke="url(#threadGradA)" stroke-width="0.95" stroke-linecap="round" opacity="0.4">
+            <animate attributeName="opacity" values="0.28;0.55;0.34;0.6;0.3;0.52;0.28" keyTimes="0;0.17;0.33;0.5;0.67;0.84;1" dur="19s" begin="-9s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1" />
+          </path>
+          <path class="bg-thread-path bg-thread-path--slow" d="M 1980 120 Q 1500 400 1280 1040" fill="none" stroke="url(#threadGradB)" stroke-width="1.05" stroke-linecap="round" opacity="0.42">
+            <animate attributeName="opacity" values="0.3;0.6;0.36;0.64;0.33;0.58;0.3" keyTimes="0;0.15;0.3;0.48;0.62;0.8;1" dur="26s" begin="-12s" repeatCount="indefinite" calcMode="spline" keySplines="0.43 0 0.57 1;0.43 0 0.57 1;0.43 0 0.57 1;0.43 0 0.57 1;0.43 0 0.57 1;0.43 0 0.57 1" />
+          </path>
+          <path class="bg-thread-path" d="M 200 1080 Q 960 520 1720 200" fill="none" stroke="url(#threadGradA)" stroke-width="0.85" stroke-linecap="round" opacity="0.38">
+            <animate attributeName="opacity" values="0.26;0.52;0.32;0.58;0.28;0.5;0.26" keyTimes="0;0.2;0.36;0.54;0.7;0.88;1" dur="24s" begin="-2s" repeatCount="indefinite" calcMode="spline" keySplines="0.41 0 0.59 1;0.41 0 0.59 1;0.41 0 0.59 1;0.41 0 0.59 1;0.41 0 0.59 1;0.41 0 0.59 1" />
+          </path>
+        </g>
+      </svg>
+    </div>
+    <div class="bg-noise" aria-hidden="true"></div>
 
-  <div class="page">
-    <header class="site-header">
-      <span class="site-logo">Айна Гард</span>
-      <nav class="header-actions" aria-label="Контакты">
-        <a class="header-btn" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer">
-          <svg class="header-btn__ico" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.19.19 0 00-.07-.2c-.08-.06-.19-.04-.27-.02-.12.03-1.99 1.27-5.61 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.26-2.06-.48-.83-.27-1.49-.42-1.43-.88.03-.24.37-.48 1.03-.73 4.04-1.76 6.73-2.92 8.07-3.49 3.85-1.6 4.65-1.88 5.17-1.89.11 0 .37.03.54.17.14.12.18.28.2.45l-.01.52z"/></svg>
-          Telegram
-        </a>
-        <a class="header-btn" href="https://wa.me/79025288988" target="_blank" rel="noopener noreferrer">
-          <svg class="header-btn__ico" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.123 1.034 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          WhatsApp
-        </a>
-        <a class="header-btn" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer">
-          <svg class="header-btn__ico" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2zm0 2.5h4V7h-4V6.5zM4 9h16v9H4V9zm2 2v2h4v-2H6zm6 0v2h4v-2h-4z"/></svg>
-          Портфолио
-        </a>
-      </nav>
-    </header>
+    <audio id="ambientAudio" loop preload="metadata">
+      <source src="assets/audio/ambient.mp3" type="audio/mpeg" />
+      <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+    </audio>
 
-    <div class="center">
-      <div class="cards-col cards-col--left">
-        <article class="card-container card-container--stripe-a" data-card>
-          <div class="card-inner">
-            <div class="card-front">
-              <div class="card-front__body">
-                <span class="card-icon" aria-hidden="true">✨</span>
-                <h2 class="card-title">Личный бренд</h2>
-                <span class="card-price-badge">от 5 000₽</span>
-              </div>
-              <p class="card-hint"><span class="card-hint__dot" aria-hidden="true">🟣</span> Нажмите</p>
-            </div>
-            <div class="card-back">
-              <button type="button" class="card-close" aria-label="Закрыть">✕</button>
-              <h3 class="card-back-title">Личный бренд</h3>
-              <ul class="card-tags">
-                <li><span class="card-tag">Нейрофотосессии</span></li>
-                <li><span class="card-tag">Цифровой аватар</span></li>
-                <li><span class="card-tag">Нейровидео</span></li>
-                <li><span class="card-tag">Контент для соцсетей</span></li>
-              </ul>
-              <a class="card-diag-link" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">На диагностику →</a>
-            </div>
-          </div>
-        </article>
-
-        <article class="card-container card-container--stripe-c" data-card>
-          <div class="card-inner">
-            <div class="card-front">
-              <div class="card-front__body">
-                <span class="card-icon" aria-hidden="true">🎨</span>
-                <h2 class="card-title">Творчество</h2>
-                <span class="card-price-badge">от 3 000₽</span>
-              </div>
-              <p class="card-hint"><span class="card-hint__dot" aria-hidden="true">🟣</span> Нажмите</p>
-            </div>
-            <div class="card-back">
-              <button type="button" class="card-close" aria-label="Закрыть">✕</button>
-              <h3 class="card-back-title">Творчество</h3>
-              <ul class="card-tags">
-                <li><span class="card-tag">Нейродизайн</span></li>
-                <li><span class="card-tag">Изображения и видео</span></li>
-                <li><span class="card-tag">Песни и музыка</span></li>
-                <li><span class="card-tag">Креативные концепции</span></li>
-              </ul>
-              <a class="card-diag-link" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">На диагностику →</a>
-            </div>
-          </div>
-        </article>
-      </div>
-
-      <div class="hero-col">
-        <p class="hero-kicker">Проводник в мир нейросетей</p>
-        <h1 class="hero-name">Айна Гард</h1>
-        <p class="hero-sub">AI-решения для бренда, бизнеса, творчества и жизни</p>
-        <div class="hero-photo">
-          <img src="https://i.imgur.com/vCUrq9r.jpeg" alt="Айна Гард" width="600" height="800" decoding="async" />
-        </div>
-      </div>
-
-      <div class="cards-col cards-col--right">
-        <article class="card-container card-container--stripe-b" data-card>
-          <div class="card-inner">
-            <div class="card-front">
-              <div class="card-front__body">
-                <span class="card-icon" aria-hidden="true">🚀</span>
-                <h2 class="card-title">Бизнес</h2>
-                <span class="card-price-badge">от 10 000₽</span>
-              </div>
-              <p class="card-hint"><span class="card-hint__dot" aria-hidden="true">🟣</span> Нажмите</p>
-            </div>
-            <div class="card-back">
-              <button type="button" class="card-close" aria-label="Закрыть">✕</button>
-              <h3 class="card-back-title">Бизнес</h3>
-              <ul class="card-tags">
-                <li><span class="card-tag">Автоматизация процессов</span></li>
-                <li><span class="card-tag">AI-агенты и боты</span></li>
-                <li><span class="card-tag">Сайты и лендинги</span></li>
-                <li><span class="card-tag">Приложения под задачу</span></li>
-              </ul>
-              <a class="card-diag-link" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">На диагностику →</a>
-            </div>
-          </div>
-        </article>
-
-        <article class="card-container card-container--stripe-d" data-card>
-          <div class="card-inner">
-            <div class="card-front">
-              <div class="card-front__body">
-                <span class="card-icon" aria-hidden="true">🧬</span>
-                <h2 class="card-title">Жизнь</h2>
-                <span class="card-price-badge">от 3 000₽</span>
-              </div>
-              <p class="card-hint"><span class="card-hint__dot" aria-hidden="true">🟣</span> Нажмите</p>
-            </div>
-            <div class="card-back">
-              <button type="button" class="card-close" aria-label="Закрыть">✕</button>
-              <h3 class="card-back-title">Жизнь</h3>
-              <ul class="card-tags">
-                <li><span class="card-tag">AI для повседневных задач</span></li>
-                <li><span class="card-tag">Идеи и планирование</span></li>
-                <li><span class="card-tag">Личные проекты</span></li>
-                <li><span class="card-tag">Умные помощники</span></li>
-              </ul>
-              <a class="card-diag-link" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">На диагностику →</a>
-            </div>
-          </div>
-        </article>
-      </div>
+    <div class="top-controls">
+      <button type="button" class="ctrl-btn" id="btnSound" aria-pressed="false" aria-label="Включить фоновый звук">
+        <span id="soundLabel" data-i18n="sound_on">🔊 Включить звук</span>
+      </button>
+      <button type="button" class="ctrl-btn" id="btnLang" title="Language">RU / EN</button>
     </div>
 
-    <footer class="site-footer">
-      <a class="footer-btn footer-btn--diag" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer">
-        <svg class="footer-btn__ico" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
-        Бесплатная диагностика
-      </a>
-      <a class="footer-btn footer-btn--tg" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer">
-        <svg class="footer-btn__ico" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.19.19 0 00-.07-.2c-.08-.06-.19-.04-.27-.02-.12.03-1.99 1.27-5.61 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.26-2.06-.48-.83-.27-1.49-.42-1.43-.88.03-.24.37-.48 1.03-.73 4.04-1.76 6.73-2.92 8.07-3.49 3.85-1.6 4.65-1.88 5.17-1.89.11 0 .37.03.54.17.14.12.18.28.2.45l-.01.52z"/></svg>
-        Telegram
-      </a>
-      <a class="footer-btn footer-btn--wa" href="https://wa.me/79025288988" target="_blank" rel="noopener noreferrer">
-        <svg class="footer-btn__ico" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.123 1.034 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        WhatsApp
-      </a>
-      <a class="footer-btn footer-btn--ghost" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer">
-        <svg class="footer-btn__ico" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2zm0 2.5h4V7h-4V6.5zM4 9h16v9H4V9zm2 2v2h4v-2H6zm6 0v2h4v-2h-4z"/></svg>
-        Портфолио
-      </a>
-    </footer>
+    <main class="hero">
+      <div class="container">
+        <div class="hero-inner">
+          <header class="hero-head">
+            <p class="eyebrow" data-i18n="eyebrow">Проводник в мир нейросетей</p>
+            <h1 class="name" data-i18n="hero_name">Айна Гард</h1>
+            <p class="sub-title" data-i18n="subtitle">AI-решения для бренда, бизнеса, творчества и жизни</p>
+
+            <div class="actions">
+              <a class="btn btn-primary" data-link="tg" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer">
+                <span data-i18n="btn_diag">Бесплатная диагностика</span>
+              </a>
+              <a class="btn btn-secondary" data-link="portfolio" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer">
+                <span data-i18n="btn_portfolio">Портфолио</span>
+              </a>
+            </div>
+          </header>
+
+          <section class="scene" aria-label="Services">
+            <div class="scene-side scene-side--left">
+              <article class="card" data-card>
+                <div class="card-inner">
+                  <div class="card-face card-front">
+                    <button type="button" class="flip-btn">
+                      <span class="card-label" data-i18n="card_dir">Направление</span>
+                      <span class="card-title" data-i18n="c1_title">Личный<br />бренд</span>
+                      <span class="card-tap-hint"><span class="hint-ico">👆</span> <span data-i18n="tap_hint">Нажмите</span></span>
+                    </button>
+                  </div>
+                  <div class="card-face card-back">
+                    <button type="button" class="card-flip-back" aria-label="Закрыть"></button>
+                    <div class="card-back-header">
+                      <span class="card-back-title" data-i18n="c1_back_title">Личный бренд</span>
+                      <span class="card-price" data-i18n="c1_price">от 5000 ₽</span>
+                    </div>
+                    <div class="card-features">
+                      <span class="card-feature" data-i18n="c1_f1">Нейрофотосессии</span>
+                      <span class="card-feature" data-i18n="c1_f2">Цифровой аватар</span>
+                      <span class="card-feature" data-i18n="c1_f3">Нейровидео</span>
+                      <span class="card-feature" data-i18n="c1_f4">Контент для соцсетей</span>
+                    </div>
+                    <a class="mini-btn mini-btn--card" data-link="tg" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer"><span data-i18n="btn_card">На диагностику</span></a>
+                  </div>
+                </div>
+              </article>
+
+              <article class="card" data-card>
+                <div class="card-inner">
+                  <div class="card-face card-front">
+                    <button type="button" class="flip-btn">
+                      <span class="card-label" data-i18n="card_dir">Направление</span>
+                      <span class="card-title" data-i18n="c3_title">Творчество</span>
+                      <span class="card-tap-hint"><span class="hint-ico">👆</span> <span data-i18n="tap_hint">Нажмите</span></span>
+                    </button>
+                  </div>
+                  <div class="card-face card-back">
+                    <button type="button" class="card-flip-back" aria-label="Закрыть"></button>
+                    <div class="card-back-header">
+                      <span class="card-back-title" data-i18n="c3_back_title">Творчество</span>
+                      <span class="card-price" data-i18n="c3_price">от 3000 ₽</span>
+                    </div>
+                    <div class="card-features">
+                      <span class="card-feature" data-i18n="c3_f1">Нейродизайн</span>
+                      <span class="card-feature" data-i18n="c3_f2">Изображения и видео</span>
+                      <span class="card-feature" data-i18n="c3_f3">Песни и музыка</span>
+                      <span class="card-feature" data-i18n="c3_f4">Креативные концепции</span>
+                    </div>
+                    <a class="mini-btn mini-btn--card" data-link="tg" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer"><span data-i18n="btn_card">На диагностику</span></a>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <div class="scene-center">
+              <div class="portrait-card" id="portraitCard">
+                <div class="portrait-inner">
+                  <div class="portrait-face portrait-front">
+                    <img id="portraitImg" src="https://i.imgur.com/vCUrq9r.jpeg" alt="Айна Гард" width="600" height="800" loading="lazy" />
+                    <p class="portrait-hint"><span class="hint-ico">👆</span> <span data-i18n="portrait_hint">Нажмите</span></p>
+                  </div>
+                  <div class="portrait-face portrait-back">
+                    <button type="button" class="portrait-flip-back" data-i18n="back">Назад</button>
+                    <p class="about-kicker" data-i18n="about_kicker">Обо мне</p>
+                    <p class="about-name" data-i18n="hero_name">Айна Гард</p>
+                    <p class="about-lead" data-i18n="about_lead">Практический опыт в нейросетях с 2024 года</p>
+                    <div class="role-chips">
+                      <span class="role-chip" data-i18n="role1">AI-креатор</span>
+                      <span class="role-chip" data-i18n="role2">Промт-инженер</span>
+                      <span class="role-chip" data-i18n="role3">Вайб-кодер</span>
+                    </div>
+                    <a class="mini-btn" data-link="tg" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer"><span data-i18n="contact">Связаться</span></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="scene-side scene-side--right">
+              <article class="card" data-card>
+                <div class="card-inner">
+                  <div class="card-face card-front">
+                    <button type="button" class="flip-btn">
+                      <span class="card-label" data-i18n="card_dir">Направление</span>
+                      <span class="card-title" data-i18n="c2_title">Бизнес</span>
+                      <span class="card-tap-hint"><span class="hint-ico">👆</span> <span data-i18n="tap_hint">Нажмите</span></span>
+                    </button>
+                  </div>
+                  <div class="card-face card-back">
+                    <button type="button" class="card-flip-back" aria-label="Закрыть"></button>
+                    <div class="card-back-header">
+                      <span class="card-back-title" data-i18n="c2_back_title">Бизнес</span>
+                      <span class="card-price" data-i18n="c2_price">от 10 000 ₽</span>
+                    </div>
+                    <div class="card-features">
+                      <span class="card-feature" data-i18n="c2_f1">Автоматизация процессов</span>
+                      <span class="card-feature" data-i18n="c2_f2">AI-агенты и боты</span>
+                      <span class="card-feature" data-i18n="c2_f3">Сайты и лендинги</span>
+                      <span class="card-feature" data-i18n="c2_f4">Приложения под задачу</span>
+                    </div>
+                    <a class="mini-btn mini-btn--card" data-link="tg" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer"><span data-i18n="btn_card">На диагностику</span></a>
+                  </div>
+                </div>
+              </article>
+
+              <article class="card" data-card>
+                <div class="card-inner">
+                  <div class="card-face card-front">
+                    <button type="button" class="flip-btn">
+                      <span class="card-label" data-i18n="card_dir">Направление</span>
+                      <span class="card-title" data-i18n="c4_title">Жизнь</span>
+                      <span class="card-tap-hint"><span class="hint-ico">👆</span> <span data-i18n="tap_hint">Нажмите</span></span>
+                    </button>
+                  </div>
+                  <div class="card-face card-back">
+                    <button type="button" class="card-flip-back" aria-label="Закрыть"></button>
+                    <div class="card-back-header">
+                      <span class="card-back-title" data-i18n="c4_back_title">Жизнь</span>
+                      <span class="card-price" data-i18n="c4_price">от 3000 ₽</span>
+                    </div>
+                    <div class="card-features">
+                      <span class="card-feature" data-i18n="c4_f1">AI для повседневных задач</span>
+                      <span class="card-feature" data-i18n="c4_f2">Идеи и планирование</span>
+                      <span class="card-feature" data-i18n="c4_f3">Личные проекты</span>
+                      <span class="card-feature" data-i18n="c4_f4">Умные помощники</span>
+                    </div>
+                    <a class="mini-btn mini-btn--card" data-link="tg" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer"><span data-i18n="btn_card">На диагностику</span></a>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
   </div>
 
   <script src="js/main.js" defer></script>
