@@ -147,9 +147,9 @@
       if (shift) {
         shift.style.transform =
           "translate(" +
-          nx * 72 * tMul +
+          nx * 96 * tMul +
           "px, " +
-          ny * 54 * tMul +
+          ny * 72 * tMul +
           "px)";
       }
       if (o1 && o2) {

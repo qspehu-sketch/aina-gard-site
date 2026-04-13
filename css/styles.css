@@ -319,24 +319,32 @@ body.music-on .bg-threads {
   width: 120%;
   height: 120%;
   pointer-events: none;
-  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  /* параллакс от курсора — без transition, чтобы слой шёл за мышью, не «отставал» */
   will-change: transform;
+}
+
+.bg-threads-drift {
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  animation: threadsDriftIdle 42s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+}
+
+body.music-on .bg-threads-drift {
+  animation: threadsDriftMusic 28s cubic-bezier(0.42, 0.08, 0.58, 0.92) infinite alternate;
 }
 
 .bg-threads-svg {
   width: 100%;
   height: 100%;
   display: block;
-  will-change: transform;
   filter:
     drop-shadow(0 0 8px rgba(110, 200, 255, 0.35))
     drop-shadow(0 0 14px rgba(196, 168, 255, 0.22))
     drop-shadow(0 0 20px rgba(240, 168, 216, 0.15));
-  animation: threadsDriftIdle 42s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
 }
 
 body.music-on .bg-threads-svg {
-  animation: threadsDriftMusic 28s cubic-bezier(0.42, 0.08, 0.58, 0.92) infinite alternate;
   filter:
     drop-shadow(0 0 10px rgba(110, 200, 255, 0.45))
     drop-shadow(0 0 18px rgba(240, 168, 216, 0.28));
@@ -542,6 +550,7 @@ body.music-on .bg-noise {
   .bg-neon-lights,
   .bg-neon-lights__orb,
   .bg-threads,
+  .bg-threads-drift,
   .bg-threads-svg,
   .bg-threads-group,
   .bg-thread-path,
@@ -561,6 +570,7 @@ body.music-on .bg-noise {
   }
   .bg-threads,
   .bg-threads-shift,
+  .bg-threads-drift,
   .bg-threads-svg { opacity: 0.85; transform: none; }
   .bg-threads svg animate { display: none !important; }
   .bg-threads-group .bg-thread-path:nth-child(1) { opacity: 0.55 !important; }
@@ -576,7 +586,7 @@ body.music-on .bg-noise {
   }
   .stagger-init .stagger-top-controls,
   .stagger-init .hero-head .eyebrow,
-  .stagger-init .hero-head .name,
+  .stagger-init .name-reveal,
   .stagger-init .hero-head .sub-title,
   .stagger-init .stagger-portrait,
   .stagger-init .stagger-card-1,
@@ -701,7 +711,7 @@ body.music-on .bg-noise {
   animation-delay: 0.1s;
 }
 
-.stagger-init .hero-head .name {
+.stagger-init .name-reveal {
   opacity: 0;
   animation-name: fadeSlideUp;
   animation-delay: 0.25s;
@@ -751,7 +761,7 @@ body.music-on .bg-noise {
 
 .stagger-init .stagger-top-controls,
 .stagger-init .hero-head .eyebrow,
-.stagger-init .hero-head .name,
+.stagger-init .name-reveal,
 .stagger-init .hero-head .sub-title,
 .stagger-init .stagger-portrait,
 .stagger-init .stagger-card-1,
@@ -773,6 +783,13 @@ body.music-on .bg-noise {
   margin-bottom: 6px;
 }
 
+/* Обёртка: stagger без конфликта с анимацией градиента на .name */
+.name-reveal {
+  display: block;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
 /* Имя: Unbounded + «хрустальный» объём + переливающийся градиент */
 .name {
   font-family: "Unbounded", "Plus Jakarta Sans", system-ui, sans-serif;
@@ -780,7 +797,7 @@ body.music-on .bg-noise {
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.02;
-  margin-bottom: 8px;
+  margin: 0;
   background: linear-gradient(
     125deg,
     #f0f9ff 0%,
@@ -798,14 +815,12 @@ body.music-on .bg-noise {
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  animation: nameCrystalShimmer 9s ease-in-out infinite;
+  animation: nameCrystalShimmer 12s ease-in-out infinite;
+  will-change: background-position;
   filter:
-    drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.65))
-    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.2))
-    drop-shadow(0 3px 2px rgba(0, 0, 0, 0.55))
-    drop-shadow(0 8px 18px rgba(0, 0, 0, 0.48))
-    drop-shadow(0 0 32px rgba(125, 211, 252, 0.38))
-    drop-shadow(0 0 58px rgba(196, 181, 253, 0.3));
+    drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.55))
+    drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5))
+    drop-shadow(0 0 36px rgba(125, 211, 252, 0.28));
 }
 
 @keyframes nameCrystalShimmer {
