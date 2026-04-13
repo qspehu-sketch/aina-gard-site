@@ -123,6 +123,20 @@
     audioEl.volume = 0.52;
   }
 
+  function initThreadsCursorParallax() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var shift = document.querySelector(".bg-threads-shift");
+    if (!shift) return;
+    var maxX = 36;
+    var maxY = 28;
+    document.addEventListener("mousemove", function (e) {
+      var nx = (e.clientX / window.innerWidth - 0.5) * 2;
+      var ny = (e.clientY / window.innerHeight - 0.5) * 2;
+      shift.style.transform =
+        "translate(" + nx * maxX + "px, " + ny * maxY + "px)";
+    });
+  }
+
   function applyLinks() {
     document.querySelectorAll("[data-link]").forEach(function (el) {
       var k = el.getAttribute("data-link");
@@ -220,6 +234,7 @@
     });
   }
 
+  initThreadsCursorParallax();
   applyLinks();
   setLang(lang);
 })();

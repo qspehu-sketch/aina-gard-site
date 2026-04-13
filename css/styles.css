@@ -314,6 +314,16 @@ body.music-on .bg-threads {
   opacity: 0.22;
 }
 
+.bg-threads-shift {
+  position: absolute;
+  inset: -6%;
+  width: 112%;
+  height: 112%;
+  pointer-events: none;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
 .bg-threads-svg {
   width: 100%;
   height: 100%;
@@ -512,6 +522,7 @@ body.music-on .bg-noise {
     opacity: 0.5;
   }
   .bg-threads,
+  .bg-threads-shift,
   .bg-threads-svg { opacity: 0.85; transform: none; }
   .bg-threads svg animate { display: none !important; }
   .bg-threads-group .bg-thread-path:nth-child(1) { opacity: 0.55 !important; }
@@ -1133,10 +1144,18 @@ body.music-on .card:not(.is-flipped):hover {
   -webkit-backface-visibility: hidden;
   overflow: hidden;
   transform: translateZ(0.1px);
-  background: linear-gradient(165deg, var(--glass) 0%, rgba(8, 6, 22, 0.7) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--line);
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(12, 10, 28, 0.42) 42%,
+    rgba(8, 6, 22, 0.72) 100%
+  );
+  backdrop-filter: blur(26px) saturate(1.12);
+  -webkit-backdrop-filter: blur(26px) saturate(1.12);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 0 0 1px rgba(110, 200, 255, 0.06) inset,
+    0 16px 48px rgba(0, 0, 0, 0.35);
 }
 
 .card-front {
