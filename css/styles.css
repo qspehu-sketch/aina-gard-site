@@ -307,6 +307,7 @@ body.music-on .bg-neon-lights__orb--c {
   overflow: hidden;
   opacity: 1;
   animation: threadsLayerBreathIdle 12s ease-in-out infinite alternate;
+  will-change: transform;
 }
 
 body.music-on .bg-threads {
@@ -568,10 +569,15 @@ body.music-on .bg-noise {
     transform: translate(-50%, -50%) !important;
     opacity: 0.5;
   }
-  .bg-threads,
+  .bg-threads {
+    opacity: 0.85;
+  }
   .bg-threads-shift,
   .bg-threads-drift,
-  .bg-threads-svg { opacity: 0.85; transform: none; }
+  .bg-threads-svg {
+    opacity: 0.85;
+    transform: none !important;
+  }
   .bg-threads svg animate { display: none !important; }
   .bg-threads-group .bg-thread-path:nth-child(1) { opacity: 0.55 !important; }
   .bg-threads-group .bg-thread-path:nth-child(2) { opacity: 0.45 !important; }

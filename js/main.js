@@ -127,36 +127,40 @@
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
-  /** Нити + orb: один pointermove (мышь / тач / перо), работает и при «уменьшить движение» — слабее амплитуда */
+  /** Нити + orb: слой нитей целиком (.bg-threads) + orb; mouse/pointer/touch */
   function initGlobalPointerAmbient() {
+    var threadsRoot = document.querySelector(".bg-threads");
     var shift = document.querySelector(".bg-threads-shift");
     var o1 = document.querySelector(".bg-orb-1");
     var o2 = document.querySelector(".bg-orb-2");
-    if (!shift && !o1 && !o2) return;
+    if (!threadsRoot && !o1 && !o2) return;
 
     var reduce = prefersReducedMotion();
-    var tMul = reduce ? 0.38 : 1;
+    var tMul = reduce ? 0.35 : 1;
     var oMul = reduce ? 0.4 : 1;
+    var pxX = reduce ? 36 : 110;
+    var pxY = reduce ? 28 : 85;
 
     function applyFromPoint(clientX, clientY) {
       var w = window.innerWidth || 1;
       var h = window.innerHeight || 1;
       var nx = (clientX / w - 0.5) * 2;
       var ny = (clientY / h - 0.5) * 2;
+      var tx = nx * pxX * tMul;
+      var ty = ny * pxY * tMul;
 
+      if (threadsRoot) {
+        threadsRoot.style.transform =
+          "translate3d(" + tx + "px, " + ty + "px, 0)";
+      }
       if (shift) {
-        shift.style.transform =
-          "translate(" +
-          nx * 96 * tMul +
-          "px, " +
-          ny * 72 * tMul +
-          "px)";
+        shift.style.transform = "";
       }
       if (o1 && o2) {
         o1.style.transform =
-          "translate(" + nx * 30 * oMul + "px, " + ny * 20 * oMul + "px)";
+          "translate3d(" + nx * 30 * oMul + "px, " + ny * 20 * oMul + "px, 0)";
         o2.style.transform =
-          "translate(" + nx * -20 * oMul + "px, " + ny * -15 * oMul + "px)";
+          "translate3d(" + nx * -20 * oMul + "px, " + ny * -15 * oMul + "px, 0)";
       }
     }
 
@@ -166,7 +170,14 @@
       }
     }
 
-    window.addEventListener("pointermove", onPointer, { passive: true });
+    function onTouch(e) {
+      var t = e.touches && e.touches[0];
+      if (t) applyFromPoint(t.clientX, t.clientY);
+    }
+
+    document.addEventListener("pointermove", onPointer, { passive: true });
+    document.addEventListener("mousemove", onPointer, { passive: true });
+    document.addEventListener("touchmove", onTouch, { passive: true });
 
     applyFromPoint(window.innerWidth * 0.5, window.innerHeight * 0.45);
   }
