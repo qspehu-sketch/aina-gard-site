@@ -56,15 +56,6 @@
       c4_f2: "Идеи и планирование",
       c4_f3: "Личные проекты",
       c4_f4: "Умные помощники",
-      manifesto_summary: "Принципы интерфейса",
-      manifesto_lead_a: "Сайт собран в духе навыка ",
-      manifesto_lead_b: ": не шаблонный «AI-слайоп», а осознанная эстетика под задачу бренда.",
-      manifesto_li1: "Тон — чёткое направление (у нас: тёмный void + неон, глубина, без кислотного шума).",
-      manifesto_li2: "Типографика — характерная пара: Unbounded + Plus Jakarta Sans, не Inter / Arial.",
-      manifesto_li3: "Цвет — доминанта и акценты через CSS-переменные, плотная атмосфера слоёв.",
-      manifesto_li4: "Движение — сильные жесты (stagger появления, шиммер имени), без мелкой суеты.",
-      manifesto_li5: "Фон — mesh, шум, частицы, свет: глубина вместо плоского однотона.",
-      manifesto_li6: "Избегаем — фиолетово-белые клише, безликие карточки, «универсальный» AI-лейаут.",
       meta_description:
         "Айна Гард — AI Creator, промт-инженер и вайб-кодер. AI-решения для бренда, бизнеса и творчества. Бесплатная консультация в Telegram."
     },
@@ -117,15 +108,6 @@
       c4_f2: "Ideas & planning",
       c4_f3: "Personal projects",
       c4_f4: "Smart assistants",
-      manifesto_summary: "Interface principles",
-      manifesto_lead_a: "Built around the ",
-      manifesto_lead_b: " skill: not generic “AI slop,” but deliberate aesthetics aligned with the brand.",
-      manifesto_li1: "Tone — a clear direction (here: dark void + neon, depth, no harsh noise).",
-      manifesto_li2: "Typography — a distinctive pair: Unbounded + Plus Jakarta Sans, not Inter / Arial.",
-      manifesto_li3: "Color — dominant base + accents via CSS variables, layered atmosphere.",
-      manifesto_li4: "Motion — strong gestures (staggered reveals, name shimmer), no jittery micro-noise.",
-      manifesto_li5: "Background — mesh, grain, particles, light: depth instead of a flat wash.",
-      manifesto_li6: "We avoid — purple-on-white clichés, faceless cards, generic “AI layout” patterns.",
       meta_description:
         "Aina Gard — AI creator, prompt engineer, and vibe coder. AI solutions for brand, business, and creativity. Free consultation on Telegram."
     }

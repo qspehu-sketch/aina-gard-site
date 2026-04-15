@@ -332,10 +332,6 @@ body.music-on .bg-neon-lights__orb--c {
       drop-shadow(0 0 12px rgba(125, 211, 252, 0.2));
   }
 
-  .design-manifesto,
-  .design-manifesto__summary::after {
-    transition: none !important;
-  }
 }
 
 /* ===== Панель: звук + язык ===== */
@@ -693,102 +689,6 @@ body.music-on .bg-neon-lights__orb--c {
 .scene--quad > .card:nth-child(5) {
   grid-column: 3;
   grid-row: 2;
-}
-
-/* Манифест frontend-design (SKILL): glass, типографика сайта */
-.design-manifesto {
-  width: 100%;
-  max-width: min(720px, 100%);
-  margin-block: clamp(16px, 2.5vw, 28px) clamp(8px, 1.5vw, 16px);
-  margin-inline: auto;
-  border-radius: var(--radius);
-  border: 1px solid var(--line);
-  background: var(--glass);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  transition: border-color 0.35s var(--ease), box-shadow 0.35s var(--ease);
-}
-
-.design-manifesto[open] {
-  border-color: rgba(110, 200, 255, 0.22);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), var(--glow-blue), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.design-manifesto__summary {
-  list-style: none;
-  cursor: pointer;
-  padding: clamp(14px, 2vw, 18px) clamp(18px, 2.5vw, 24px);
-  font-family: "Unbounded", system-ui, sans-serif;
-  font-size: clamp(13px, 1.1vw, 15px);
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--soft);
-  user-select: none;
-}
-
-.design-manifesto__summary::-webkit-details-marker { display: none; }
-
-.design-manifesto__summary::after {
-  content: "";
-  display: inline-block;
-  width: 0.45em;
-  height: 0.45em;
-  margin-left: 0.65em;
-  border-right: 2px solid var(--neon-blue-soft);
-  border-bottom: 2px solid var(--neon-pink-soft);
-  transform: rotate(45deg) translateY(-0.15em);
-  transition: transform 0.3s var(--ease);
-}
-
-.design-manifesto[open] .design-manifesto__summary::after {
-  transform: rotate(225deg) translateY(0.05em);
-}
-
-.design-manifesto__body {
-  padding: 0 clamp(18px, 2.5vw, 24px) clamp(16px, 2vw, 22px);
-  border-top: 1px solid var(--line);
-}
-
-.design-manifesto__lead {
-  font-size: clamp(13px, 1.05vw, 15px);
-  line-height: 1.55;
-  color: var(--muted);
-  margin-bottom: 0.85em;
-}
-
-.design-manifesto__skill {
-  color: var(--neon-blue);
-  font-weight: 600;
-  margin-inline: 0.25em;
-}
-
-.design-manifesto__list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.65em;
-  font-size: clamp(12px, 0.95vw, 14px);
-  line-height: 1.5;
-  color: var(--muted);
-}
-
-.design-manifesto__list li {
-  position: relative;
-  padding-left: 1.1em;
-}
-
-.design-manifesto__list li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.55em;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--neon-blue), var(--neon-pink));
-  opacity: 0.85;
 }
 
 .quad-portrait-wrap .portrait-card {
@@ -1484,20 +1384,6 @@ body.music-on .card:not(.is-flipped):hover {
 
   .scene {
     padding-block: 2px;
-  }
-
-  .design-manifesto {
-    margin-block: 12px 6px;
-    max-width: 100%;
-  }
-
-  .design-manifesto__summary {
-    padding: 12px 14px;
-    letter-spacing: 0.1em;
-  }
-
-  .design-manifesto__body {
-    padding: 0 14px 14px;
   }
 
   .scene--quad {
