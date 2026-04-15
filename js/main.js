@@ -144,24 +144,18 @@
       var reduce = prefersReducedMotion();
       return {
         reduce: reduce,
-        maxDist: reduce ? 98 : 118,
-        baseLine: reduce ? 0.14 : 0.22,
-        musicBoost: document.body.classList.contains("music-on") ? 1.14 : 1,
-        magnetR: reduce ? 125 : 268,
-        magnetPull: reduce ? 0.38 : 1.08,
-        spring: reduce ? 0.1 : 0.064,
-        friction: reduce ? 0.79 : 0.865,
-        highlightR: reduce ? 145 : 300
+        maxDist: reduce ? 108 : 168,
+        baseLine: reduce ? 0.18 : 0.3,
+        musicBoost: document.body.classList.contains("music-on") ? 1.12 : 1,
+        magnetR: reduce ? 138 : 310,
+        magnetPull: reduce ? 0.48 : 2.05,
+        spring: reduce ? 0.11 : 0.048,
+        friction: reduce ? 0.8 : 0.9,
+        highlightR: reduce ? 160 : 340
       };
     }
 
-    function countN() {
-      var reduce = prefersReducedMotion();
-      var area = w * h;
-      var n = Math.floor(area / 28500);
-      return Math.max(32, Math.min(reduce ? 46 : 84, n));
-    }
-
+    /** Равномерная сетка + джиттер — рёбра стыкуются в «паутину», не разрозненные точки */
     function rebuild() {
       var rect = canvas.getBoundingClientRect();
       var rw = rect.width || window.innerWidth || 960;
@@ -172,23 +166,32 @@
       canvas.width = Math.floor(w * dpr);
       canvas.height = Math.floor(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var n = countN();
+      var reduce = prefersReducedMotion();
       var rnd = Math.random;
-      var pad = 16;
+      var pad = 14;
+      var targetPts = reduce ? 44 : 96;
+      var step = Math.sqrt((w * h) / targetPts);
+      step = Math.max(52, Math.min(86, step));
+      var jitter = step * 0.38;
       particles = [];
-      for (var i = 0; i < n; i++) {
-        var ox = pad + rnd() * (w - pad * 2);
-        var oy = pad + rnd() * (h - pad * 2);
-        particles.push({
-          ox: ox,
-          oy: oy,
-          x: ox,
-          y: oy,
-          vx: 0,
-          vy: 0,
-          r: 1.05 + rnd() * 2.35,
-          bit: rnd() < 0.22 ? (rnd() < 0.5 ? "0" : "1") : null
-        });
+      for (var cy = pad + step * 0.5; cy < h - pad; cy += step) {
+        for (var cx = pad + step * 0.5; cx < w - pad; cx += step) {
+          var ox = cx + (rnd() - 0.5) * jitter;
+          var oy = cy + (rnd() - 0.5) * jitter;
+          ox = Math.min(w - pad, Math.max(pad, ox));
+          oy = Math.min(h - pad, Math.max(pad, oy));
+          particles.push({
+            ox: ox,
+            oy: oy,
+            x: ox,
+            y: oy,
+            vx: 0,
+            vy: 0,
+            r: 0.45 + rnd() * 0.95,
+            bit:
+              rnd() < 0.055 ? (rnd() < 0.5 ? "0" : "1") : null
+          });
+        }
       }
     }
 
@@ -284,8 +287,8 @@
             mouse.active && mdM < highlightR
               ? Math.max(0, 1 - mdM / highlightR)
               : 0;
-          alpha = (1 - d / maxDist) * baseLineAlpha * (1 + edgeBoost * 2.85);
-          lw = 0.72 + edgeBoost * 1.55 + (1 - d / maxDist) * 0.48;
+          alpha = (1 - d / maxDist) * baseLineAlpha * (1 + edgeBoost * 3.2);
+          lw = 0.88 + edgeBoost * 1.85 + (1 - d / maxDist) * 0.55;
           if (edgeBoost > 0.18) {
             ctx.strokeStyle =
               "rgba(185, 248, 255, " + Math.min(0.92, alpha + 0.28) + ")";
@@ -306,17 +309,17 @@
         var dM = mouse.active ? Math.hypot(mx - p.x, my - p.y) : 9999;
         var hot =
           mouse.active && dM < magnetR ? Math.max(0, 1 - dM / magnetR) : 0;
-        var rad = p.r + hot * 4;
+        var rad = p.r + hot * 3.2;
         ctx.shadowColor = "rgba(120, 235, 255, 0.95)";
-        ctx.shadowBlur = hot > 0.07 ? 16 * hot : 0;
+        ctx.shadowBlur = hot > 0.06 ? 18 * hot : 0;
         ctx.fillStyle =
-          "rgba(195, 250, 255, " + (0.3 + hot * 0.6) + ")";
+          "rgba(195, 250, 255, " + (0.38 + hot * 0.58) + ")";
         ctx.beginPath();
         ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
-        if (p.bit) {
-          var fs = Math.max(7, Math.min(13, rad * 2.35));
+        if (p.bit && rad > 1.15) {
+          var fs = Math.max(6, Math.min(10, rad * 2.1));
           ctx.font =
             "600 " + fs + "px 'Plus Jakarta Sans', system-ui, sans-serif";
           ctx.fillStyle =
