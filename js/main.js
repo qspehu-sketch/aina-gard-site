@@ -127,160 +127,282 @@
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
-  function isParticlesMobileProfile() {
-    return (
-      window.matchMedia("(pointer: coarse)").matches ||
-      window.matchMedia("(max-width: 900px)").matches
-    );
-  }
+  /** Canvas plexus: рёбра по расстоянию, пружина к (ox,oy), магнит и подсветка у курсора */
+  function initPlexusBackground() {
+    var canvas = document.getElementById("bgPlexus");
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext("2d");
+    var particles = [];
+    var mouse = { x: 0, y: 0, active: false };
+    var w = 300;
+    var h = 200;
+    var dpr = 1;
+    var running = true;
+    var rafId = 0;
 
-  var particlesJsRetries = 0;
-
-  function destroyParticlesJs() {
-    if (window.pJSDom && window.pJSDom.length) {
-      window.pJSDom.forEach(function (p) {
-        try {
-          if (p.pJS && p.pJS.fn && p.pJS.fn.vendors && p.pJS.fn.vendors.destroypJS) {
-            p.pJS.fn.vendors.destroypJS();
-          }
-        } catch (err) {}
-      });
+    function cfg() {
+      var reduce = prefersReducedMotion();
+      return {
+        reduce: reduce,
+        maxDist: reduce ? 86 : 70,
+        baseLine: reduce ? 0.16 : 0.2,
+        musicBoost: document.body.classList.contains("music-on") ? 1.1 : 1,
+        magnetR: reduce ? 155 : 440,
+        magnetPull: reduce ? 0.55 : 3.15,
+        spring: reduce ? 0.12 : 0.042,
+        friction: reduce ? 0.82 : 0.91,
+        highlightR: reduce ? 175 : 460
+      };
     }
-    /* библиотека обнуляет pJSDom в null — без массива второй вызов particlesJS падает */
-    window.pJSDom = [];
-    var wrap = document.getElementById("particles-js");
-    if (wrap) {
-      var rest = wrap.querySelectorAll("canvas");
-      for (var ri = 0; ri < rest.length; ri++) {
-        try {
-          if (rest[ri].parentNode) rest[ri].parentNode.removeChild(rest[ri]);
-        } catch (e2) {}
+
+    /** Мелкая сетка + джиттер (паутина); maxDist под шаг — много пересечений */
+    function rebuild() {
+      var rect = canvas.getBoundingClientRect();
+      var rw = rect.width || window.innerWidth || 960;
+      var rh = rect.height || window.innerHeight || 540;
+      dpr = Math.min(2, window.devicePixelRatio || 1);
+      w = Math.max(320, Math.floor(rw));
+      h = Math.max(240, Math.floor(rh));
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var reduce = prefersReducedMotion();
+      var rnd = Math.random;
+      var pad = 12;
+      var step = reduce ? 54 : 40;
+      var jitter = step * 0.32;
+      particles = [];
+      for (var cy = pad + step * 0.5; cy < h - pad; cy += step) {
+        for (var cx = pad + step * 0.5; cx < w - pad; cx += step) {
+          var ox = cx + (rnd() - 0.5) * jitter;
+          var oy = cy + (rnd() - 0.5) * jitter;
+          ox = Math.min(w - pad, Math.max(pad, ox));
+          oy = Math.min(h - pad, Math.max(pad, oy));
+          particles.push({
+            ox: ox,
+            oy: oy,
+            x: ox,
+            y: oy,
+            vx: 0,
+            vy: 0,
+            r: 0.2 + rnd() * 0.42,
+            bit: null
+          });
+        }
       }
     }
-  }
 
-  /** particles.js: палитра лендинга; detect_on window — клики по карточкам не блокируются */
-  function initParticlesBackground() {
-    if (!document.getElementById("particles-js")) return;
-    if (typeof window.particlesJS !== "function") {
-      if (particlesJsRetries++ < 32) {
-        setTimeout(initParticlesBackground, 150);
+    function setMouseFromClient(clientX, clientY, rect) {
+      if (
+        clientX < rect.left - 32 ||
+        clientX > rect.right + 32 ||
+        clientY < rect.top - 32 ||
+        clientY > rect.bottom + 32
+      ) {
+        mouse.active = false;
+        return;
       }
-      return;
-    }
-    particlesJsRetries = 0;
-
-    var reduce = prefersReducedMotion();
-    var music = document.body.classList.contains("music-on");
-    var mobile = isParticlesMobileProfile();
-
-    var colors = {
-      particles: "#6ec8ff",
-      lines: "#8fd4ff",
-      stroke: "rgba(196, 168, 255, 0.45)"
-    };
-    if (music) {
-      colors.particles = "#7ed8ff";
-      colors.lines = "#a8dcff";
-    }
-    if (mobile) {
-      colors.lines = colors.particles;
-      colors.stroke = "rgba(110, 200, 255, 0.35)";
+      mouse.x = (clientX - rect.left) * (w / rect.width);
+      mouse.y = (clientY - rect.top) * (h / rect.height);
+      mouse.active = true;
     }
 
-    var wrap = document.getElementById("particles-js");
-    if (wrap) wrap.classList.toggle("bg-particles--lite-fx", mobile);
+    function onPointerMove(e) {
+      var rect = canvas.getBoundingClientRect();
+      if (typeof e.clientX !== "number") return;
+      setMouseFromClient(e.clientX, e.clientY, rect);
+    }
 
-    destroyParticlesJs();
-    if (!window.pJSDom) window.pJSDom = [];
+    function onPointerLeaveTouch() {
+      mouse.active = false;
+    }
 
-    var numDesktop = reduce ? 52 : 148;
-    var areaDesktop = reduce ? 1050 : 560;
-    var numMobile = reduce ? 44 : 72;
-    var areaMobile = reduce ? 1200 : 980;
+    function onTouchStart(e) {
+      var t = e.touches && e.touches[0];
+      if (!t) return;
+      var rect = canvas.getBoundingClientRect();
+      setMouseFromClient(t.clientX, t.clientY, rect);
+    }
 
-    window.particlesJS("particles-js", {
-      particles: {
-        number: {
-          value: mobile ? numMobile : numDesktop,
-          density: {
-            enable: true,
-            value_area: mobile ? areaMobile : areaDesktop
+    function tick() {
+      rafId = 0;
+      if (!running) return;
+      var c = cfg();
+      var mx = mouse.x;
+      var my = mouse.y;
+      var magnetR = c.magnetR;
+      var magnetPull = c.magnetPull * c.musicBoost;
+      var spring = c.spring;
+      var friction = c.friction;
+      var i;
+      var p;
+      for (i = 0; i < particles.length; i++) {
+        p = particles[i];
+        var dx = p.ox - p.x;
+        var dy = p.oy - p.y;
+        p.vx += dx * spring;
+        p.vy += dy * spring;
+        if (mouse.active) {
+          var mdx = mx - p.x;
+          var mdy = my - p.y;
+          var md = Math.hypot(mdx, mdy);
+          if (md < magnetR && md > 0.001) {
+            var t = 1 - md / magnetR;
+            var f = t * t * magnetPull;
+            p.vx += (mdx / md) * f;
+            p.vy += (mdy / md) * f;
           }
-        },
-        color: { value: colors.particles },
-        shape: {
-          type: "circle",
-          stroke: { width: mobile ? 0.25 : 0.5, color: colors.stroke }
-        },
-        opacity: {
-          value: mobile ? 0.52 : reduce ? 0.5 : 0.78,
-          random: !mobile,
-          anim: {
-            enable: !mobile && !reduce,
-            speed: 0.55,
-            opacity_min: 0.38
+        }
+        p.vx *= friction;
+        p.vy *= friction;
+        p.x += p.vx;
+        p.y += p.vy;
+      }
+
+      ctx.clearRect(0, 0, w, h);
+      var maxDist = c.maxDist;
+      var baseLineAlpha = c.baseLine * c.musicBoost;
+      var highlightR = c.highlightR;
+      var j;
+      var q;
+      var d;
+      var mdM;
+      var edgeBoost;
+      var alpha;
+      var lw;
+      var cell = maxDist;
+      var buckets = {};
+      var bx;
+      var by;
+      var key;
+      var arr;
+      var k;
+      var ox;
+      var oy;
+
+      for (i = 0; i < particles.length; i++) {
+        p = particles[i];
+        bx = (p.x / cell) | 0;
+        by = (p.y / cell) | 0;
+        key = bx + "," + by;
+        if (!buckets[key]) buckets[key] = [];
+        buckets[key].push(i);
+      }
+
+      for (i = 0; i < particles.length; i++) {
+        p = particles[i];
+        bx = (p.x / cell) | 0;
+        by = (p.y / cell) | 0;
+        for (ox = -1; ox <= 1; ox++) {
+          for (oy = -1; oy <= 1; oy++) {
+            arr = buckets[bx + ox + "," + (by + oy)];
+            if (!arr) continue;
+            for (k = 0; k < arr.length; k++) {
+              j = arr[k];
+              if (j <= i) continue;
+              q = particles[j];
+              d = Math.hypot(p.x - q.x, p.y - q.y);
+              if (d > maxDist) continue;
+              var midx = (p.x + q.x) * 0.5;
+              var midy = (p.y + q.y) * 0.5;
+              mdM = mouse.active ? Math.hypot(mx - midx, my - midy) : 9999;
+              edgeBoost =
+                mouse.active && mdM < highlightR
+                  ? Math.max(0, 1 - mdM / highlightR)
+                  : 0;
+              alpha = (1 - d / maxDist) * baseLineAlpha * (1 + edgeBoost * 3.6);
+              lw = 0.5 + edgeBoost * 2.1 + (1 - d / maxDist) * 0.42;
+              if (edgeBoost > 0.12) {
+                ctx.strokeStyle =
+                  "rgba(195, 252, 255, " + Math.min(0.88, alpha + 0.32) + ")";
+              } else {
+                ctx.strokeStyle = "rgba(88, 195, 255, " + alpha + ")";
+              }
+              ctx.lineWidth = lw;
+              ctx.lineCap = "round";
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(q.x, q.y);
+              ctx.stroke();
+            }
           }
-        },
-        size: {
-          value: mobile ? 2 : reduce ? 2 : 2.8,
-          random: true,
-          anim: { enable: !mobile && !reduce, speed: 1, size_min: 0.65 }
-        },
-        line_linked: {
-          enable: true,
-          distance: mobile ? 118 : reduce ? 105 : 168,
-          color: colors.lines,
-          opacity: mobile
-            ? music
-              ? 0.48
-              : 0.4
-            : reduce
-              ? 0.34
-              : music
-                ? 0.62
-                : 0.55,
-          width: mobile ? 0.72 : reduce ? 0.65 : 1.15
-        },
-        move: {
-          enable: true,
-          speed: mobile ? 0.85 : reduce ? 0.35 : 1.2,
-          direction: "none",
-          random: true,
-          straight: false,
-          out_mode: "out",
-          bounce: false
         }
-      },
-      interactivity: {
-        detect_on: "window",
-        events: {
-          onhover: { enable: true, mode: "grab" },
-          onclick: { enable: !reduce, mode: "push" },
-          resize: true
-        },
-        modes: {
-          grab: {
-            distance: mobile ? 200 : 275,
-            line_linked: { opacity: mobile ? 0.88 : music ? 0.95 : 0.9 }
-          },
-          push: { particles_nb: reduce ? 0 : mobile ? 2 : 4 },
-          repulse: { distance: 150, duration: 0.35 }
-        }
-      },
-      retina_detect: true
+      }
+
+      for (i = 0; i < particles.length; i++) {
+        p = particles[i];
+        var dM = mouse.active ? Math.hypot(mx - p.x, my - p.y) : 9999;
+        var hot =
+          mouse.active && dM < magnetR ? Math.max(0, 1 - dM / magnetR) : 0;
+        var rad = p.r + hot * 2.4;
+        ctx.shadowColor = "rgba(120, 235, 255, 0.95)";
+        ctx.shadowBlur = hot > 0.05 ? 14 * hot : 0;
+        ctx.fillStyle =
+          "rgba(185, 248, 255, " + (0.34 + hot * 0.55) + ")";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function startLoop() {
+      if (!rafId && running) rafId = requestAnimationFrame(tick);
+    }
+
+    rebuild();
+    startLoop();
+
+    window.addEventListener("load", function () {
+      rebuild();
     });
-  }
 
-  var resizeParticlesT;
-  window.addEventListener(
-    "resize",
-    function () {
-      clearTimeout(resizeParticlesT);
-      resizeParticlesT = setTimeout(initParticlesBackground, 320);
-    },
-    { passive: true }
-  );
+    requestAnimationFrame(function () {
+      rebuild();
+    });
+
+    window.addEventListener(
+      "resize",
+      function () {
+        rebuild();
+      },
+      { passive: true }
+    );
+
+    document.addEventListener("pointermove", onPointerMove, { passive: true });
+    document.addEventListener("pointerdown", onPointerMove, { passive: true });
+    document.addEventListener("pointerup", function (e) {
+      if (e.pointerType === "touch") onPointerLeaveTouch();
+    }, { passive: true });
+    document.addEventListener("pointercancel", onPointerLeaveTouch, {
+      passive: true
+    });
+    document.addEventListener("touchstart", onTouchStart, { passive: true });
+    document.addEventListener(
+      "touchmove",
+      function (e) {
+        var t = e.touches && e.touches[0];
+        if (!t) return;
+        var rect = canvas.getBoundingClientRect();
+        setMouseFromClient(t.clientX, t.clientY, rect);
+      },
+      { passive: true }
+    );
+    document.addEventListener("touchend", onPointerLeaveTouch, {
+      passive: true
+    });
+
+    document.addEventListener("visibilitychange", function () {
+      running = !document.hidden;
+      if (running) startLoop();
+    });
+
+    var rect0 = canvas.getBoundingClientRect();
+    mouse.x = rect0.width * 0.5;
+    mouse.y = rect0.height * 0.46;
+  }
 
   /** Лёгкий параллакс слоя сети + orb */
   function initGlobalPointerAmbient() {
@@ -456,8 +578,6 @@
             document.body.classList.add("music-on");
             soundLabel.textContent = t.sound_off;
             btnSound.setAttribute("aria-label", t.ariaSoundOff);
-            clearTimeout(toggleSound._particlesT);
-            toggleSound._particlesT = setTimeout(initParticlesBackground, 120);
           })
           .catch(function (err) {
             console.warn("[audio] play blocked or failed:", err);
@@ -472,8 +592,6 @@
       soundLabel.textContent = t.sound_on;
       btnSound.setAttribute("aria-label", t.ariaSoundOn);
     }
-    clearTimeout(toggleSound._particlesT);
-    toggleSound._particlesT = setTimeout(initParticlesBackground, 120);
   }
 
   if (btnSound) btnSound.addEventListener("click", toggleSound);
@@ -512,7 +630,7 @@
     });
   }
 
-  initParticlesBackground();
+  initPlexusBackground();
   initGlobalPointerAmbient();
   initCardWowEffects();
   applyLinks();

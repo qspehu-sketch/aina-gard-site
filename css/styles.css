@@ -332,55 +332,30 @@ body.music-on .bg-threads {
   transform: none;
 }
 
-/* particles.js: контейнер + canvas на весь слой, клики не перехватываем */
-#particles-js.bg-particles {
-  position: absolute;
-  inset: 0;
+.bg-plexus {
   width: 100%;
   height: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
-  overflow: hidden;
-  pointer-events: none;
-  background: transparent;
-}
-
-#particles-js.bg-particles canvas {
   display: block;
-  width: 100% !important;
-  height: 100% !important;
-  pointer-events: none;
-}
-
-.bg-particles {
+  vertical-align: top;
   filter:
-    drop-shadow(0 0 6px rgba(90, 200, 255, 0.26))
-    drop-shadow(0 0 16px rgba(120, 190, 255, 0.12));
+    drop-shadow(0 0 6px rgba(90, 200, 255, 0.28))
+    drop-shadow(0 0 18px rgba(120, 190, 255, 0.14));
 }
 
-body.music-on .bg-particles {
+body.music-on .bg-plexus {
   filter:
-    drop-shadow(0 0 8px rgba(100, 220, 255, 0.32))
-    drop-shadow(0 0 20px rgba(196, 168, 255, 0.14));
-}
-
-/* Телефон: без drop-shadow — меньше «радужных» полос от GPU */
-.bg-particles.bg-particles--lite-fx {
-  filter: none;
-}
-
-body.music-on .bg-particles.bg-particles--lite-fx {
-  filter: none;
+    drop-shadow(0 0 8px rgba(100, 220, 255, 0.34))
+    drop-shadow(0 0 22px rgba(160, 200, 255, 0.18));
 }
 
 @keyframes threadsLayerBreathIdle {
-  0% { opacity: 0.5; }
-  100% { opacity: 0.74; }
+  0% { opacity: 0.38; }
+  100% { opacity: 0.58; }
 }
 
 @keyframes threadsLayerBreathMusic {
-  0% { opacity: 0.56; }
-  100% { opacity: 0.8; }
+  0% { opacity: 0.48; }
+  100% { opacity: 0.68; }
 }
 
 /* Слой 3: сетка — drift + лёгкий glow pulse */
@@ -560,7 +535,7 @@ body.music-on .bg-noise {
   .bg-neon-lights__orb,
   .bg-threads,
   .bg-threads-drift,
-  #particles-js.bg-particles,
+  .bg-plexus,
   .bg-grid,
   .bg-circuit,
   .bg-noise {
@@ -583,9 +558,9 @@ body.music-on .bg-noise {
     opacity: 0.9;
     transform: none !important;
   }
-  #particles-js.bg-particles {
-    opacity: 0.9;
-    filter: drop-shadow(0 0 4px rgba(120, 220, 255, 0.18));
+  .bg-plexus {
+    opacity: 0.92;
+    filter: drop-shadow(0 0 4px rgba(120, 220, 255, 0.2));
   }
   .bg-grid { opacity: 0.2; }
   .bg-circuit { opacity: 0.1; }
