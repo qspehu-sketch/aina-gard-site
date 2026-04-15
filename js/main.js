@@ -127,10 +127,258 @@
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
-  /** Сеть нитей + orb: внешний слой + внутренняя группа (сильнее «тянет» к курсору) */
+  /** Canvas plexus: рёбра по расстоянию, пружина к (ox,oy), магнит и подсветка у курсора */
+  function initPlexusBackground() {
+    var canvas = document.getElementById("bgPlexus");
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext("2d", { alpha: true });
+    var particles = [];
+    var mouse = { x: 0, y: 0, active: false };
+    var w = 300;
+    var h = 200;
+    var dpr = 1;
+    var running = true;
+    var rafId = 0;
+
+    function cfg() {
+      var reduce = prefersReducedMotion();
+      return {
+        reduce: reduce,
+        maxDist: reduce ? 98 : 118,
+        baseLine: reduce ? 0.11 : 0.16,
+        musicBoost: document.body.classList.contains("music-on") ? 1.14 : 1,
+        magnetR: reduce ? 125 : 268,
+        magnetPull: reduce ? 0.38 : 1.08,
+        spring: reduce ? 0.1 : 0.064,
+        friction: reduce ? 0.79 : 0.865,
+        highlightR: reduce ? 145 : 300
+      };
+    }
+
+    function countN() {
+      var reduce = prefersReducedMotion();
+      var area = w * h;
+      var n = Math.floor(area / 28500);
+      return Math.max(32, Math.min(reduce ? 46 : 84, n));
+    }
+
+    function rebuild() {
+      var rect = canvas.getBoundingClientRect();
+      dpr = Math.min(2, window.devicePixelRatio || 1);
+      w = Math.max(280, Math.floor(rect.width));
+      h = Math.max(200, Math.floor(rect.height));
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var n = countN();
+      var rnd = Math.random;
+      var pad = 16;
+      particles = [];
+      for (var i = 0; i < n; i++) {
+        var ox = pad + rnd() * (w - pad * 2);
+        var oy = pad + rnd() * (h - pad * 2);
+        particles.push({
+          ox: ox,
+          oy: oy,
+          x: ox,
+          y: oy,
+          vx: 0,
+          vy: 0,
+          r: 1.05 + rnd() * 2.35,
+          bit: rnd() < 0.22 ? (rnd() < 0.5 ? "0" : "1") : null
+        });
+      }
+    }
+
+    function setMouseFromClient(clientX, clientY, rect) {
+      if (
+        clientX < rect.left - 32 ||
+        clientX > rect.right + 32 ||
+        clientY < rect.top - 32 ||
+        clientY > rect.bottom + 32
+      ) {
+        mouse.active = false;
+        return;
+      }
+      mouse.x = (clientX - rect.left) * (w / rect.width);
+      mouse.y = (clientY - rect.top) * (h / rect.height);
+      mouse.active = true;
+    }
+
+    function onPointerMove(e) {
+      var rect = canvas.getBoundingClientRect();
+      if (typeof e.clientX !== "number") return;
+      setMouseFromClient(e.clientX, e.clientY, rect);
+    }
+
+    function onPointerLeaveTouch() {
+      mouse.active = false;
+    }
+
+    function onTouchStart(e) {
+      var t = e.touches && e.touches[0];
+      if (!t) return;
+      var rect = canvas.getBoundingClientRect();
+      setMouseFromClient(t.clientX, t.clientY, rect);
+    }
+
+    function tick() {
+      rafId = 0;
+      if (!running) return;
+      var c = cfg();
+      var mx = mouse.x;
+      var my = mouse.y;
+      var magnetR = c.magnetR;
+      var magnetPull = c.magnetPull * c.musicBoost;
+      var spring = c.spring;
+      var friction = c.friction;
+      var i;
+      var p;
+      for (i = 0; i < particles.length; i++) {
+        p = particles[i];
+        var dx = p.ox - p.x;
+        var dy = p.oy - p.y;
+        p.vx += dx * spring;
+        p.vy += dy * spring;
+        if (mouse.active) {
+          var mdx = mx - p.x;
+          var mdy = my - p.y;
+          var md = Math.hypot(mdx, mdy);
+          if (md < magnetR && md > 0.001) {
+            var t = 1 - md / magnetR;
+            var f = t * t * magnetPull;
+            p.vx += (mdx / md) * f;
+            p.vy += (mdy / md) * f;
+          }
+        }
+        p.vx *= friction;
+        p.vy *= friction;
+        p.x += p.vx;
+        p.y += p.vy;
+      }
+
+      ctx.clearRect(0, 0, w, h);
+      var maxDist = c.maxDist;
+      var baseLineAlpha = c.baseLine * c.musicBoost;
+      var highlightR = c.highlightR;
+      var j;
+      var q;
+      var d;
+      var mdM;
+      var edgeBoost;
+      var alpha;
+      var lw;
+
+      for (i = 0; i < particles.length; i++) {
+        p = particles[i];
+        for (j = i + 1; j < particles.length; j++) {
+          q = particles[j];
+          d = Math.hypot(p.x - q.x, p.y - q.y);
+          if (d > maxDist) continue;
+          var midx = (p.x + q.x) * 0.5;
+          var midy = (p.y + q.y) * 0.5;
+          mdM = mouse.active ? Math.hypot(mx - midx, my - midy) : 9999;
+          edgeBoost =
+            mouse.active && mdM < highlightR
+              ? Math.max(0, 1 - mdM / highlightR)
+              : 0;
+          alpha = (1 - d / maxDist) * baseLineAlpha * (1 + edgeBoost * 2.85);
+          lw = 0.72 + edgeBoost * 1.55 + (1 - d / maxDist) * 0.48;
+          if (edgeBoost > 0.18) {
+            ctx.strokeStyle =
+              "rgba(185, 248, 255, " + Math.min(0.92, alpha + 0.28) + ")";
+          } else {
+            ctx.strokeStyle = "rgba(95, 200, 255, " + alpha + ")";
+          }
+          ctx.lineWidth = lw;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          ctx.stroke();
+        }
+      }
+
+      for (i = 0; i < particles.length; i++) {
+        p = particles[i];
+        var dM = mouse.active ? Math.hypot(mx - p.x, my - p.y) : 9999;
+        var hot =
+          mouse.active && dM < magnetR ? Math.max(0, 1 - dM / magnetR) : 0;
+        var rad = p.r + hot * 4;
+        ctx.shadowColor = "rgba(120, 235, 255, 0.95)";
+        ctx.shadowBlur = hot > 0.07 ? 16 * hot : 0;
+        ctx.fillStyle =
+          "rgba(195, 250, 255, " + (0.3 + hot * 0.6) + ")";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        if (p.bit) {
+          var fs = Math.max(7, Math.min(13, rad * 2.35));
+          ctx.font =
+            "600 " + fs + "px 'Plus Jakarta Sans', system-ui, sans-serif";
+          ctx.fillStyle =
+            "rgba(215, 252, 255, " + (0.36 + hot * 0.55) + ")";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(p.bit, p.x, p.y + 0.5);
+        }
+      }
+
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function startLoop() {
+      if (!rafId && running) rafId = requestAnimationFrame(tick);
+    }
+
+    rebuild();
+    startLoop();
+
+    window.addEventListener(
+      "resize",
+      function () {
+        rebuild();
+      },
+      { passive: true }
+    );
+
+    document.addEventListener("pointermove", onPointerMove, { passive: true });
+    document.addEventListener("pointerdown", onPointerMove, { passive: true });
+    document.addEventListener("pointerup", function (e) {
+      if (e.pointerType === "touch") onPointerLeaveTouch();
+    }, { passive: true });
+    document.addEventListener("pointercancel", onPointerLeaveTouch, {
+      passive: true
+    });
+    document.addEventListener("touchstart", onTouchStart, { passive: true });
+    document.addEventListener(
+      "touchmove",
+      function (e) {
+        var t = e.touches && e.touches[0];
+        if (!t) return;
+        var rect = canvas.getBoundingClientRect();
+        setMouseFromClient(t.clientX, t.clientY, rect);
+      },
+      { passive: true }
+    );
+    document.addEventListener("touchend", onPointerLeaveTouch, {
+      passive: true
+    });
+
+    document.addEventListener("visibilitychange", function () {
+      running = !document.hidden;
+      if (running) startLoop();
+    });
+
+    var rect0 = canvas.getBoundingClientRect();
+    mouse.x = rect0.width * 0.5;
+    mouse.y = rect0.height * 0.46;
+  }
+
+  /** Лёгкий параллакс слоя сети + orb */
   function initGlobalPointerAmbient() {
     var threadsRoot = document.querySelector(".bg-threads");
-    var threadsGroup = document.querySelector(".bg-threads-group");
     var shift = document.querySelector(".bg-threads-shift");
     var o1 = document.querySelector(".bg-orb-1");
     var o2 = document.querySelector(".bg-orb-2");
@@ -139,10 +387,8 @@
     var reduce = prefersReducedMotion();
     var tMul = reduce ? 0.35 : 1;
     var oMul = reduce ? 0.4 : 1;
-    var pxX = reduce ? 42 : 150;
-    var pxY = reduce ? 32 : 115;
-    var pullGX = reduce ? 14 : 52;
-    var pullGY = reduce ? 11 : 40;
+    var pxX = reduce ? 28 : 72;
+    var pxY = reduce ? 22 : 54;
 
     function applyFromPoint(clientX, clientY) {
       var w = window.innerWidth || 1;
@@ -151,16 +397,10 @@
       var ny = (clientY / h - 0.5) * 2;
       var tx = nx * pxX * tMul;
       var ty = ny * pxY * tMul;
-      var gx = nx * pullGX * tMul;
-      var gy = ny * pullGY * tMul;
 
       if (threadsRoot) {
         threadsRoot.style.transform =
           "translate3d(" + tx + "px, " + ty + "px, 0)";
-      }
-      if (threadsGroup) {
-        threadsGroup.style.transform =
-          "translate3d(" + gx + "px, " + gy + "px, 0)";
       }
       if (shift) {
         shift.style.transform = "";
@@ -362,6 +602,7 @@
     });
   }
 
+  initPlexusBackground();
   initGlobalPointerAmbient();
   initCardWowEffects();
   applyLinks();
