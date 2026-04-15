@@ -46,10 +46,46 @@ body {
 a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }
 
-/* ===== Фон: неоновый переливающийся mesh + слои свечения ===== */
+/* ===== Фон: тёмный градиент + particles.js (без mesh-псевдоэлементов на .bg-base) ===== */
 .page {
   position: relative;
+  z-index: 3;
   min-height: 100vh;
+  isolation: isolate;
+}
+
+/* Порядок в HTML: .page-bg-under → #particles-js (оба z-index:0, частицы выше) → .page-bg-over (2) → .page (3) */
+.page-bg-under,
+.page-bg-over {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.page-bg-under {
+  z-index: 0;
+}
+
+#particles-js {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  background: transparent;
+}
+
+#particles-js canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none;
+}
+
+.page-bg-over {
+  z-index: 2;
   isolation: isolate;
 }
 
@@ -59,110 +95,7 @@ img { display: block; max-width: 100%; }
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  background: #030208;
-}
-
-/* Слой A: основной живой градиент (тёмно-синий → фиолет → розовый + cyan) */
-.bg-base::before {
-  content: "";
-  position: absolute;
-  inset: -50%;
-  background: linear-gradient(
-    128deg,
-    #040818 0%,
-    #0d1638 12%,
-    #1a0f3a 26%,
-    #2a1a52 40%,
-    #3d1f58 52%,
-    #1a2a5a 64%,
-    #0a2848 76%,
-    #12081c 88%,
-    #1a0f28 100%
-  );
-  background-size: 400% 400%;
-  animation:
-    neonMeshFlowIdle 42s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate,
-    neonMeshOpacityIdle 16s ease-in-out infinite alternate;
-}
-
-body.music-on .bg-base::before {
-  animation:
-    neonMeshFlowMusic 32s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate,
-    neonMeshOpacityMusic 12s ease-in-out infinite alternate;
-  opacity: 1;
-}
-
-/* Слой B: переливающийся «шёлк» — screen + движение в другом направлении */
-.bg-base::after {
-  content: "";
-  position: absolute;
-  inset: -50%;
-  background: linear-gradient(
-    218deg,
-    rgba(110, 200, 255, 0.22) 0%,
-    rgba(147, 112, 219, 0.28) 22%,
-    rgba(200, 120, 200, 0.2) 44%,
-    rgba(240, 168, 216, 0.24) 66%,
-    rgba(72, 200, 220, 0.18) 88%,
-    rgba(110, 200, 255, 0.15) 100%
-  );
-  background-size: 380% 380%;
-  mix-blend-mode: screen;
-  opacity: 0.62;
-  animation:
-    neonIridescentIdle 58s cubic-bezier(0.4, 0.1, 0.6, 0.9) infinite alternate,
-    neonIridescentShimmerIdle 14s ease-in-out infinite alternate;
-}
-
-body.music-on .bg-base::after {
-  animation:
-    neonIridescentMusic 44s cubic-bezier(0.4, 0.1, 0.6, 0.9) infinite alternate,
-    neonIridescentShimmerMusic 10s ease-in-out infinite alternate;
-  opacity: 0.78;
-}
-
-@keyframes neonMeshFlowIdle {
-  0% { background-position: 5% 15%; }
-  35% { background-position: 55% 55%; }
-  100% { background-position: 95% 85%; }
-}
-
-@keyframes neonMeshFlowMusic {
-  0% { background-position: 2% 10%; }
-  35% { background-position: 55% 55%; }
-  100% { background-position: 98% 90%; }
-}
-
-@keyframes neonMeshOpacityIdle {
-  0% { opacity: 0.92; }
-  100% { opacity: 1; }
-}
-
-@keyframes neonMeshOpacityMusic {
-  0% { opacity: 0.96; }
-  100% { opacity: 1; }
-}
-
-@keyframes neonIridescentIdle {
-  0% { background-position: 90% 10%; transform: scale(1); }
-  50% { background-position: 40% 60%; transform: scale(1.02); }
-  100% { background-position: 8% 88%; transform: scale(1); }
-}
-
-@keyframes neonIridescentMusic {
-  0% { background-position: 88% 8%; transform: scale(1); }
-  50% { background-position: 42% 58%; transform: scale(1.04); }
-  100% { background-position: 5% 92%; transform: scale(1); }
-}
-
-@keyframes neonIridescentShimmerIdle {
-  0% { opacity: 0.48; filter: brightness(0.95); }
-  100% { opacity: 0.72; filter: brightness(1.08); }
-}
-
-@keyframes neonIridescentShimmerMusic {
-  0% { opacity: 0.58; filter: brightness(1); }
-  100% { opacity: 0.88; filter: brightness(1.12); }
+  background: linear-gradient(165deg, #040818 0%, #0d1638 32%, #0a0620 65%, #030208 100%);
 }
 
 /* Слои 1–3: крупные radial glow, разные направления + пульсация */
@@ -298,150 +231,6 @@ body.music-on .bg-neon-lights__orb--c {
   50% { transform: scale(1.05); }
 }
 
-/* ===== Plexus-сеть (Canvas): узлы, рёбра по расстоянию, магнит к курсору в JS ===== */
-.bg-threads {
-  position: fixed;
-  inset: 0;
-  z-index: 4;
-  pointer-events: none;
-  overflow: hidden;
-  opacity: 1;
-  animation: threadsLayerBreathIdle 12s ease-in-out infinite alternate;
-  will-change: transform;
-}
-
-body.music-on .bg-threads {
-  animation: threadsLayerBreathMusic 8s ease-in-out infinite alternate;
-}
-
-.bg-threads-shift {
-  position: absolute;
-  inset: -10%;
-  width: 120%;
-  height: 120%;
-  pointer-events: none;
-  will-change: transform;
-}
-
-.bg-threads-drift {
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
-  /* дрейф отключён — иначе «плывёт» вся физика плексуса */
-  transform: none;
-}
-
-.bg-plexus {
-  width: 100%;
-  height: 100%;
-  display: block;
-  vertical-align: top;
-  filter:
-    drop-shadow(0 0 6px rgba(90, 200, 255, 0.28))
-    drop-shadow(0 0 18px rgba(120, 190, 255, 0.14));
-}
-
-body.music-on .bg-plexus {
-  filter:
-    drop-shadow(0 0 8px rgba(100, 220, 255, 0.34))
-    drop-shadow(0 0 22px rgba(160, 200, 255, 0.18));
-}
-
-@keyframes threadsLayerBreathIdle {
-  0% { opacity: 0.38; }
-  100% { opacity: 0.58; }
-}
-
-@keyframes threadsLayerBreathMusic {
-  0% { opacity: 0.48; }
-  100% { opacity: 0.68; }
-}
-
-/* Слой 3: сетка — drift + лёгкий glow pulse */
-.bg-grid {
-  position: fixed;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-  opacity: 0.1;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-  background-size: 48px 48px;
-  background-position: 0 0, 0 0;
-  mask-image: radial-gradient(ellipse 88% 78% at 50% 50%, #000 22%, transparent 78%);
-  animation:
-    gridDriftIdle 58s linear infinite,
-    gridGlowPulseIdle 20s ease-in-out infinite alternate;
-}
-
-body.music-on .bg-grid {
-  animation:
-    gridDriftMusic 36s linear infinite,
-    gridGlowPulseMusic 12s ease-in-out infinite alternate;
-  opacity: 0.14;
-}
-
-@keyframes gridDriftIdle {
-  0% { background-position: 0 0, 0 0; }
-  100% { background-position: 96px 64px, -48px 32px; }
-}
-
-@keyframes gridDriftMusic {
-  0% { background-position: 0 0, 0 0; }
-  100% { background-position: 144px 96px, -72px 48px; }
-}
-
-@keyframes gridGlowPulseIdle {
-  0% { opacity: 0.08; }
-  100% { opacity: 0.12; }
-}
-
-@keyframes gridGlowPulseMusic {
-  0% { opacity: 0.1; }
-  100% { opacity: 0.15; }
-}
-
-.bg-circuit {
-  position: fixed;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-  opacity: 0.05;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath d='M0 60h40v20H80V40h40' fill='none' stroke='%236ec8ff' stroke-width='0.4'/%3E%3Ccircle cx='40' cy='60' r='2' fill='%23f0a8d8'/%3E%3C/svg%3E");
-  animation:
-    circuitDriftIdle 40s linear infinite,
-    circuitGlowPulseIdle 22s ease-in-out infinite alternate;
-}
-
-body.music-on .bg-circuit {
-  animation:
-    circuitDriftMusic 24s linear infinite,
-    circuitGlowPulseMusic 14s ease-in-out infinite alternate;
-  opacity: 0.08;
-}
-
-@keyframes circuitDriftIdle {
-  0% { background-position: 0 0; }
-  100% { background-position: 120px 120px; }
-}
-
-@keyframes circuitDriftMusic {
-  0% { background-position: 0 0; }
-  100% { background-position: 120px 120px; }
-}
-
-@keyframes circuitGlowPulseIdle {
-  0% { opacity: 0.08; }
-  100% { opacity: 0.12; }
-}
-
-@keyframes circuitGlowPulseMusic {
-  0% { opacity: 0.12; }
-  100% { opacity: 0.16; }
-}
-
 /* Фото — глубина */
 .bg-photo {
   position: fixed;
@@ -504,45 +293,11 @@ body.music-on .bg-circuit {
   background: radial-gradient(circle at 55% 48%, rgba(236, 72, 153, 0.9) 0%, rgba(180, 80, 160, 0.22) 48%, transparent 70%);
 }
 
-.bg-noise {
-  position: fixed;
-  inset: 0;
-  z-index: 5;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation: noiseBreathIdle 18s ease-in-out infinite alternate;
-  opacity: 0.038;
-}
-
-body.music-on .bg-noise {
-  animation: noiseBreathMusic 11s ease-in-out infinite alternate;
-}
-
-@keyframes noiseBreathIdle {
-  0% { opacity: 0.032; }
-  100% { opacity: 0.045; }
-}
-
-@keyframes noiseBreathMusic {
-  0% { opacity: 0.038; }
-  100% { opacity: 0.055; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .bg-base::before,
-  .bg-base::after,
   .bg-neon-lights,
-  .bg-neon-lights__orb,
-  .bg-threads,
-  .bg-threads-drift,
-  .bg-plexus,
-  .bg-grid,
-  .bg-circuit,
-  .bg-noise {
+  .bg-neon-lights__orb {
     animation: none !important;
   }
-  .bg-base::before { opacity: 0.9; background-position: 50% 50%; }
-  .bg-base::after { opacity: 0.5; background-position: 50% 50%; transform: none; filter: none; }
   .bg-neon-lights { transform: none; }
   .bg-neon-lights__orb--a,
   .bg-neon-lights__orb--b { transform: none !important; opacity: 0.55; }
@@ -550,21 +305,6 @@ body.music-on .bg-noise {
     transform: translate(-50%, -50%) !important;
     opacity: 0.5;
   }
-  .bg-threads {
-    opacity: 0.85;
-  }
-  .bg-threads-shift,
-  .bg-threads-drift {
-    opacity: 0.9;
-    transform: none !important;
-  }
-  .bg-plexus {
-    opacity: 0.92;
-    filter: drop-shadow(0 0 4px rgba(120, 220, 255, 0.2));
-  }
-  .bg-grid { opacity: 0.2; }
-  .bg-circuit { opacity: 0.1; }
-  .bg-noise { opacity: 0.038; }
   .bg-mouse-orbs .bg-orb {
     transition: none !important;
   }
@@ -583,9 +323,18 @@ body.music-on .bg-noise {
     transform: none !important;
   }
   .name {
-    animation: none;
-    background-position: 50% 50%;
-    filter: drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.5)) drop-shadow(0 3px 4px rgba(0, 0, 0, 0.5));
+    animation: nameCrystalShimmer 15s ease-in-out infinite;
+    text-shadow: none;
+    will-change: auto;
+    filter:
+      drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.48))
+      drop-shadow(0 2px 3px rgba(0, 0, 0, 0.48))
+      drop-shadow(0 0 12px rgba(125, 211, 252, 0.2));
+  }
+
+  .design-manifesto,
+  .design-manifesto__summary::after {
+    transition: none !important;
   }
 }
 
@@ -944,6 +693,102 @@ body.music-on .bg-noise {
 .scene--quad > .card:nth-child(5) {
   grid-column: 3;
   grid-row: 2;
+}
+
+/* Манифест frontend-design (SKILL): glass, типографика сайта */
+.design-manifesto {
+  width: 100%;
+  max-width: min(720px, 100%);
+  margin-block: clamp(16px, 2.5vw, 28px) clamp(8px, 1.5vw, 16px);
+  margin-inline: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--glass);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: border-color 0.35s var(--ease), box-shadow 0.35s var(--ease);
+}
+
+.design-manifesto[open] {
+  border-color: rgba(110, 200, 255, 0.22);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), var(--glow-blue), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.design-manifesto__summary {
+  list-style: none;
+  cursor: pointer;
+  padding: clamp(14px, 2vw, 18px) clamp(18px, 2.5vw, 24px);
+  font-family: "Unbounded", system-ui, sans-serif;
+  font-size: clamp(13px, 1.1vw, 15px);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--soft);
+  user-select: none;
+}
+
+.design-manifesto__summary::-webkit-details-marker { display: none; }
+
+.design-manifesto__summary::after {
+  content: "";
+  display: inline-block;
+  width: 0.45em;
+  height: 0.45em;
+  margin-left: 0.65em;
+  border-right: 2px solid var(--neon-blue-soft);
+  border-bottom: 2px solid var(--neon-pink-soft);
+  transform: rotate(45deg) translateY(-0.15em);
+  transition: transform 0.3s var(--ease);
+}
+
+.design-manifesto[open] .design-manifesto__summary::after {
+  transform: rotate(225deg) translateY(0.05em);
+}
+
+.design-manifesto__body {
+  padding: 0 clamp(18px, 2.5vw, 24px) clamp(16px, 2vw, 22px);
+  border-top: 1px solid var(--line);
+}
+
+.design-manifesto__lead {
+  font-size: clamp(13px, 1.05vw, 15px);
+  line-height: 1.55;
+  color: var(--muted);
+  margin-bottom: 0.85em;
+}
+
+.design-manifesto__skill {
+  color: var(--neon-blue);
+  font-weight: 600;
+  margin-inline: 0.25em;
+}
+
+.design-manifesto__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65em;
+  font-size: clamp(12px, 0.95vw, 14px);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.design-manifesto__list li {
+  position: relative;
+  padding-left: 1.1em;
+}
+
+.design-manifesto__list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--neon-blue), var(--neon-pink));
+  opacity: 0.85;
 }
 
 .quad-portrait-wrap .portrait-card {
@@ -1583,12 +1428,195 @@ body.music-on .card:not(.is-flipped):hover {
   }
 }
 
+/* Мобильные: имя без «моргания» GPU — только если не включено «уменьшить движение» */
+@media (max-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .name {
+    animation: nameCrystalShimmer 36s ease-in-out infinite;
+    will-change: auto;
+    filter:
+      drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.45))
+      drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45))
+      drop-shadow(0 0 14px rgba(125, 211, 252, 0.22)) !important;
+  }
+}
+
+/* Мобильные: компактнее верстка */
+@media (max-width: 768px) {
+  .container {
+    width: min(calc(100% - 12px), var(--container));
+  }
+
+  .hero {
+    padding: calc(env(safe-area-inset-top, 0px) + clamp(48px, 7vh, 72px)) 0 clamp(8px, 1.5vh, 16px);
+  }
+
+  .hero-inner {
+    gap: clamp(4px, 1vh, 10px);
+  }
+
+  .hero-head {
+    max-width: 100%;
+  }
+
+  .eyebrow {
+    margin-bottom: 4px;
+    letter-spacing: 0.22em;
+  }
+
+  .name-reveal {
+    margin-bottom: 4px;
+  }
+
+  .sub-title {
+    margin-bottom: 4px;
+    line-height: 1.35;
+    font-size: clamp(0.82rem, 3.2vw, 0.95rem);
+  }
+
+  .actions {
+    gap: 8px;
+  }
+
+  .btn {
+    min-height: 2.5rem;
+    padding: 0 clamp(1rem, 3vw, 1.35rem);
+  }
+
+  .scene {
+    padding-block: 2px;
+  }
+
+  .design-manifesto {
+    margin-block: 12px 6px;
+    max-width: 100%;
+  }
+
+  .design-manifesto__summary {
+    padding: 12px 14px;
+    letter-spacing: 0.1em;
+  }
+
+  .design-manifesto__body {
+    padding: 0 14px 14px;
+  }
+
+  .scene--quad {
+    gap: 10px;
+    min-height: 0;
+    max-height: none;
+  }
+
+  .quad-portrait-wrap {
+    width: min(260px, 82vw);
+    max-width: 300px;
+    max-height: min(280px, 56vw);
+    margin: 0 auto 6px;
+  }
+
+  .scene--quad .card {
+    min-height: 168px;
+    max-width: 100%;
+  }
+
+  .scene--quad .flip-btn {
+    padding: clamp(10px, 2.5vw, 20px) clamp(12px, 3vw, 24px);
+  }
+
+  .scene--quad .card-back {
+    padding: clamp(10px, 1.6vw, 16px) clamp(12px, 2vw, 18px);
+    gap: 6px;
+  }
+
+  .scene--quad .card-back-tags {
+    max-height: calc(2 * (0.75rem + 10px + 2px) + 4px);
+  }
+
+  .scene--quad .card-back-tag {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
+  .scene--quad .card-title {
+    font-size: clamp(18px, 4.8vw, 26px);
+  }
+
+  .top-controls {
+    gap: 6px;
+  }
+
+  .ctrl-btn {
+    padding: 6px 12px;
+    font-size: 0.625rem;
+  }
+
+  .portrait-card--quad {
+    max-height: 300px;
+  }
+
+  .portrait-back--rich {
+    padding: 16px 14px 14px;
+    gap: 10px;
+  }
+}
+
 @media (max-width: 600px) {
   .top-controls { top: 8px; right: 8px; }
-  .name { font-size: clamp(1.85rem, 9vw, 2.4rem); }
+  .name { font-size: clamp(1.75rem, 8.5vw, 2.25rem); }
   .actions { flex-direction: column; width: 100%; }
   .btn { width: 100%; }
   .scene--quad .card {
-    min-height: 200px;
+    min-height: 156px;
+  }
+}
+
+@media (max-width: 380px) and (prefers-reduced-motion: no-preference) {
+  .name {
+    animation: nameCrystalShimmer 40s ease-in-out infinite;
+  }
+}
+
+@media (max-width: 380px) {
+  .container {
+    width: min(calc(100% - 8px), var(--container));
+  }
+
+  .hero {
+    padding: calc(env(safe-area-inset-top, 0px) + 44px) 0 6px;
+  }
+
+  .hero-inner {
+    gap: 3px;
+  }
+
+  .name {
+    font-size: clamp(1.55rem, 8vw, 2rem);
+  }
+
+  .quad-portrait-wrap {
+    width: min(220px, 78vw);
+    max-height: min(240px, 52vw);
+    margin-bottom: 4px;
+  }
+
+  .scene--quad {
+    gap: 8px;
+  }
+
+  .scene--quad .card {
+    min-height: 142px;
+  }
+
+  .scene--quad .card-title {
+    font-size: clamp(16px, 4.5vw, 22px);
+  }
+
+  .btn {
+    min-height: 2.35rem;
+    font-size: 0.65rem;
+  }
+
+  .ctrl-btn {
+    padding: 5px 10px;
+    font-size: 0.58rem;
   }
 }

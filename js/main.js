@@ -56,6 +56,15 @@
       c4_f2: "Идеи и планирование",
       c4_f3: "Личные проекты",
       c4_f4: "Умные помощники",
+      manifesto_summary: "Принципы интерфейса",
+      manifesto_lead_a: "Сайт собран в духе навыка ",
+      manifesto_lead_b: ": не шаблонный «AI-слайоп», а осознанная эстетика под задачу бренда.",
+      manifesto_li1: "Тон — чёткое направление (у нас: тёмный void + неон, глубина, без кислотного шума).",
+      manifesto_li2: "Типографика — характерная пара: Unbounded + Plus Jakarta Sans, не Inter / Arial.",
+      manifesto_li3: "Цвет — доминанта и акценты через CSS-переменные, плотная атмосфера слоёв.",
+      manifesto_li4: "Движение — сильные жесты (stagger появления, шиммер имени), без мелкой суеты.",
+      manifesto_li5: "Фон — mesh, шум, частицы, свет: глубина вместо плоского однотона.",
+      manifesto_li6: "Избегаем — фиолетово-белые клише, безликие карточки, «универсальный» AI-лейаут.",
       meta_description:
         "Айна Гард — AI Creator, промт-инженер и вайб-кодер. AI-решения для бренда, бизнеса и творчества. Бесплатная консультация в Telegram."
     },
@@ -108,6 +117,15 @@
       c4_f2: "Ideas & planning",
       c4_f3: "Personal projects",
       c4_f4: "Smart assistants",
+      manifesto_summary: "Interface principles",
+      manifesto_lead_a: "Built around the ",
+      manifesto_lead_b: " skill: not generic “AI slop,” but deliberate aesthetics aligned with the brand.",
+      manifesto_li1: "Tone — a clear direction (here: dark void + neon, depth, no harsh noise).",
+      manifesto_li2: "Typography — a distinctive pair: Unbounded + Plus Jakarta Sans, not Inter / Arial.",
+      manifesto_li3: "Color — dominant base + accents via CSS variables, layered atmosphere.",
+      manifesto_li4: "Motion — strong gestures (staggered reveals, name shimmer), no jittery micro-noise.",
+      manifesto_li5: "Background — mesh, grain, particles, light: depth instead of a flat wash.",
+      manifesto_li6: "We avoid — purple-on-white clichés, faceless cards, generic “AI layout” patterns.",
       meta_description:
         "Aina Gard — AI creator, prompt engineer, and vibe coder. AI solutions for brand, business, and creativity. Free consultation on Telegram."
     }
@@ -127,312 +145,21 @@
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
-  /** Canvas plexus: рёбра по расстоянию, пружина к (ox,oy), магнит и подсветка у курсора */
-  function initPlexusBackground() {
-    var canvas = document.getElementById("bgPlexus");
-    if (!canvas || !canvas.getContext) return;
-    var ctx = canvas.getContext("2d");
-    var particles = [];
-    var mouse = { x: 0, y: 0, active: false };
-    var w = 300;
-    var h = 200;
-    var dpr = 1;
-    var running = true;
-    var rafId = 0;
-
-    function cfg() {
-      var reduce = prefersReducedMotion();
-      return {
-        reduce: reduce,
-        maxDist: reduce ? 86 : 70,
-        baseLine: reduce ? 0.16 : 0.2,
-        musicBoost: document.body.classList.contains("music-on") ? 1.1 : 1,
-        magnetR: reduce ? 155 : 440,
-        magnetPull: reduce ? 0.55 : 3.15,
-        spring: reduce ? 0.12 : 0.042,
-        friction: reduce ? 0.82 : 0.91,
-        highlightR: reduce ? 175 : 460
-      };
-    }
-
-    /** Мелкая сетка + джиттер (паутина); maxDist под шаг — много пересечений */
-    function rebuild() {
-      var rect = canvas.getBoundingClientRect();
-      var rw = rect.width || window.innerWidth || 960;
-      var rh = rect.height || window.innerHeight || 540;
-      dpr = Math.min(2, window.devicePixelRatio || 1);
-      w = Math.max(320, Math.floor(rw));
-      h = Math.max(240, Math.floor(rh));
-      canvas.width = Math.floor(w * dpr);
-      canvas.height = Math.floor(h * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var reduce = prefersReducedMotion();
-      var rnd = Math.random;
-      var pad = 12;
-      var step = reduce ? 54 : 40;
-      var jitter = step * 0.32;
-      particles = [];
-      for (var cy = pad + step * 0.5; cy < h - pad; cy += step) {
-        for (var cx = pad + step * 0.5; cx < w - pad; cx += step) {
-          var ox = cx + (rnd() - 0.5) * jitter;
-          var oy = cy + (rnd() - 0.5) * jitter;
-          ox = Math.min(w - pad, Math.max(pad, ox));
-          oy = Math.min(h - pad, Math.max(pad, oy));
-          particles.push({
-            ox: ox,
-            oy: oy,
-            x: ox,
-            y: oy,
-            vx: 0,
-            vy: 0,
-            r: 0.2 + rnd() * 0.42,
-            bit: null
-          });
-        }
-      }
-    }
-
-    function setMouseFromClient(clientX, clientY, rect) {
-      if (
-        clientX < rect.left - 32 ||
-        clientX > rect.right + 32 ||
-        clientY < rect.top - 32 ||
-        clientY > rect.bottom + 32
-      ) {
-        mouse.active = false;
-        return;
-      }
-      mouse.x = (clientX - rect.left) * (w / rect.width);
-      mouse.y = (clientY - rect.top) * (h / rect.height);
-      mouse.active = true;
-    }
-
-    function onPointerMove(e) {
-      var rect = canvas.getBoundingClientRect();
-      if (typeof e.clientX !== "number") return;
-      setMouseFromClient(e.clientX, e.clientY, rect);
-    }
-
-    function onPointerLeaveTouch() {
-      mouse.active = false;
-    }
-
-    function onTouchStart(e) {
-      var t = e.touches && e.touches[0];
-      if (!t) return;
-      var rect = canvas.getBoundingClientRect();
-      setMouseFromClient(t.clientX, t.clientY, rect);
-    }
-
-    function tick() {
-      rafId = 0;
-      if (!running) return;
-      var c = cfg();
-      var mx = mouse.x;
-      var my = mouse.y;
-      var magnetR = c.magnetR;
-      var magnetPull = c.magnetPull * c.musicBoost;
-      var spring = c.spring;
-      var friction = c.friction;
-      var i;
-      var p;
-      for (i = 0; i < particles.length; i++) {
-        p = particles[i];
-        var dx = p.ox - p.x;
-        var dy = p.oy - p.y;
-        p.vx += dx * spring;
-        p.vy += dy * spring;
-        if (mouse.active) {
-          var mdx = mx - p.x;
-          var mdy = my - p.y;
-          var md = Math.hypot(mdx, mdy);
-          if (md < magnetR && md > 0.001) {
-            var t = 1 - md / magnetR;
-            var f = t * t * magnetPull;
-            p.vx += (mdx / md) * f;
-            p.vy += (mdy / md) * f;
-          }
-        }
-        p.vx *= friction;
-        p.vy *= friction;
-        p.x += p.vx;
-        p.y += p.vy;
-      }
-
-      ctx.clearRect(0, 0, w, h);
-      var maxDist = c.maxDist;
-      var baseLineAlpha = c.baseLine * c.musicBoost;
-      var highlightR = c.highlightR;
-      var j;
-      var q;
-      var d;
-      var mdM;
-      var edgeBoost;
-      var alpha;
-      var lw;
-      var cell = maxDist;
-      var buckets = {};
-      var bx;
-      var by;
-      var key;
-      var arr;
-      var k;
-      var ox;
-      var oy;
-
-      for (i = 0; i < particles.length; i++) {
-        p = particles[i];
-        bx = (p.x / cell) | 0;
-        by = (p.y / cell) | 0;
-        key = bx + "," + by;
-        if (!buckets[key]) buckets[key] = [];
-        buckets[key].push(i);
-      }
-
-      for (i = 0; i < particles.length; i++) {
-        p = particles[i];
-        bx = (p.x / cell) | 0;
-        by = (p.y / cell) | 0;
-        for (ox = -1; ox <= 1; ox++) {
-          for (oy = -1; oy <= 1; oy++) {
-            arr = buckets[bx + ox + "," + (by + oy)];
-            if (!arr) continue;
-            for (k = 0; k < arr.length; k++) {
-              j = arr[k];
-              if (j <= i) continue;
-              q = particles[j];
-              d = Math.hypot(p.x - q.x, p.y - q.y);
-              if (d > maxDist) continue;
-              var midx = (p.x + q.x) * 0.5;
-              var midy = (p.y + q.y) * 0.5;
-              mdM = mouse.active ? Math.hypot(mx - midx, my - midy) : 9999;
-              edgeBoost =
-                mouse.active && mdM < highlightR
-                  ? Math.max(0, 1 - mdM / highlightR)
-                  : 0;
-              alpha = (1 - d / maxDist) * baseLineAlpha * (1 + edgeBoost * 3.6);
-              lw = 0.5 + edgeBoost * 2.1 + (1 - d / maxDist) * 0.42;
-              if (edgeBoost > 0.12) {
-                ctx.strokeStyle =
-                  "rgba(195, 252, 255, " + Math.min(0.88, alpha + 0.32) + ")";
-              } else {
-                ctx.strokeStyle = "rgba(88, 195, 255, " + alpha + ")";
-              }
-              ctx.lineWidth = lw;
-              ctx.lineCap = "round";
-              ctx.beginPath();
-              ctx.moveTo(p.x, p.y);
-              ctx.lineTo(q.x, q.y);
-              ctx.stroke();
-            }
-          }
-        }
-      }
-
-      for (i = 0; i < particles.length; i++) {
-        p = particles[i];
-        var dM = mouse.active ? Math.hypot(mx - p.x, my - p.y) : 9999;
-        var hot =
-          mouse.active && dM < magnetR ? Math.max(0, 1 - dM / magnetR) : 0;
-        var rad = p.r + hot * 2.4;
-        ctx.shadowColor = "rgba(120, 235, 255, 0.95)";
-        ctx.shadowBlur = hot > 0.05 ? 14 * hot : 0;
-        ctx.fillStyle =
-          "rgba(185, 248, 255, " + (0.34 + hot * 0.55) + ")";
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      }
-
-      rafId = requestAnimationFrame(tick);
-    }
-
-    function startLoop() {
-      if (!rafId && running) rafId = requestAnimationFrame(tick);
-    }
-
-    rebuild();
-    startLoop();
-
-    window.addEventListener("load", function () {
-      rebuild();
-    });
-
-    requestAnimationFrame(function () {
-      rebuild();
-    });
-
-    window.addEventListener(
-      "resize",
-      function () {
-        rebuild();
-      },
-      { passive: true }
-    );
-
-    document.addEventListener("pointermove", onPointerMove, { passive: true });
-    document.addEventListener("pointerdown", onPointerMove, { passive: true });
-    document.addEventListener("pointerup", function (e) {
-      if (e.pointerType === "touch") onPointerLeaveTouch();
-    }, { passive: true });
-    document.addEventListener("pointercancel", onPointerLeaveTouch, {
-      passive: true
-    });
-    document.addEventListener("touchstart", onTouchStart, { passive: true });
-    document.addEventListener(
-      "touchmove",
-      function (e) {
-        var t = e.touches && e.touches[0];
-        if (!t) return;
-        var rect = canvas.getBoundingClientRect();
-        setMouseFromClient(t.clientX, t.clientY, rect);
-      },
-      { passive: true }
-    );
-    document.addEventListener("touchend", onPointerLeaveTouch, {
-      passive: true
-    });
-
-    document.addEventListener("visibilitychange", function () {
-      running = !document.hidden;
-      if (running) startLoop();
-    });
-
-    var rect0 = canvas.getBoundingClientRect();
-    mouse.x = rect0.width * 0.5;
-    mouse.y = rect0.height * 0.46;
-  }
-
-  /** Лёгкий параллакс слоя сети + orb */
+  /** Лёгкий параллакс orb */
   function initGlobalPointerAmbient() {
-    var threadsRoot = document.querySelector(".bg-threads");
-    var shift = document.querySelector(".bg-threads-shift");
     var o1 = document.querySelector(".bg-orb-1");
     var o2 = document.querySelector(".bg-orb-2");
-    if (!threadsRoot && !o1 && !o2) return;
+    if (!o1 && !o2) return;
 
     var reduce = prefersReducedMotion();
-    var tMul = reduce ? 0.35 : 1;
     var oMul = reduce ? 0.4 : 1;
-    var pxX = reduce ? 28 : 72;
-    var pxY = reduce ? 22 : 54;
 
     function applyFromPoint(clientX, clientY) {
       var w = window.innerWidth || 1;
       var h = window.innerHeight || 1;
       var nx = (clientX / w - 0.5) * 2;
       var ny = (clientY / h - 0.5) * 2;
-      var tx = nx * pxX * tMul;
-      var ty = ny * pxY * tMul;
 
-      if (threadsRoot) {
-        threadsRoot.style.transform =
-          "translate3d(" + tx + "px, " + ty + "px, 0)";
-      }
-      if (shift) {
-        shift.style.transform = "";
-      }
       if (o1 && o2) {
         o1.style.transform =
           "translate3d(" + nx * 30 * oMul + "px, " + ny * 20 * oMul + "px, 0)";
@@ -630,7 +357,6 @@
     });
   }
 
-  initPlexusBackground();
   initGlobalPointerAmbient();
   initCardWowEffects();
   applyLinks();
