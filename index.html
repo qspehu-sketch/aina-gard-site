@@ -16,7 +16,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=nomanifest1" />
+  <link rel="stylesheet" href="css/styles.css?v=dotgrid1" />
+  <link rel="stylesheet" href="css/dot-grid.css?v=1" />
 </head>
 <body>
   <div class="page-bg-under" aria-hidden="true">
@@ -35,6 +36,8 @@
       <div class="bg-neon-lights__orb bg-neon-lights__orb--c"></div>
     </div>
   </div>
+
+  <div id="dot-grid-root" class="dot-grid-root" aria-hidden="true"></div>
 
   <div class="page stagger-init" id="page">
     <audio id="ambientAudio" loop preload="metadata">
@@ -216,6 +219,8 @@
     </main>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+  <script src="js/dot-grid.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js" defer></script>
   <script src="js/particles-init.js" defer></script>
   <script src="js/main.js" defer></script>

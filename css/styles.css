@@ -49,12 +49,16 @@ img { display: block; max-width: 100%; }
 /* ===== Фон: тёмный градиент + particles.js (без mesh-псевдоэлементов на .bg-base) ===== */
 .page {
   position: relative;
-  z-index: 3;
+  z-index: 4;
   min-height: 100vh;
   isolation: isolate;
 }
 
-/* Порядок в HTML: .page-bg-under → #particles-js (оба z-index:0, частицы выше) → .page-bg-over (2) → .page (3) */
+/*
+ * Слои (снизу вверх): подложка → фото/неон → DotGrid (z2) → particles (z3) → контент (z4).
+ * Раньше частицы были z-index:0 под .page-bg-over (2) — сеть рисовалась, но её почти не было видно
+ * под затемнённым фото; казалось, что «нити не крепятся».
+ */
 .page-bg-under,
 .page-bg-over {
   position: fixed;
@@ -66,15 +70,32 @@ img { display: block; max-width: 100%; }
   z-index: 0;
 }
 
+.page-bg-over {
+  z-index: 1;
+  isolation: isolate;
+}
+
+/* Градиент + canvas: над DotGrid и фото, под .page; отдельный композитный слой — меньше рывков при скролле */
 #particles-js {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  z-index: 3;
   pointer-events: none;
-  background: transparent;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  transition: background 0.5s ease;
+  background: linear-gradient(to top right, #e3f2fd 0%, #90caf9 50%, #64b5f6 100%);
+}
+
+html:not(.theme-light):not([data-theme="light"]) #particles-js,
+html.dark #particles-js,
+html[data-theme="dark"] #particles-js {
+  background: linear-gradient(to top right, #000814 0%, #003566 50%, #0077b6 100%);
 }
 
 #particles-js canvas {
@@ -82,11 +103,7 @@ img { display: block; max-width: 100%; }
   width: 100% !important;
   height: 100% !important;
   pointer-events: none;
-}
-
-.page-bg-over {
-  z-index: 2;
-  isolation: isolate;
+  transform: translateZ(0);
 }
 
 .bg-base {
@@ -247,7 +264,7 @@ body.music-on .bg-neon-lights__orb--c {
   background-image: url("https://i.imgur.com/vCUrq9r.jpeg");
   background-size: cover;
   background-position: center 20%;
-  filter: blur(48px) saturate(1.08) brightness(0.38);
+  filter: blur(36px) saturate(1.06) brightness(0.38);
   transform: scale(1.1);
   opacity: 0.75;
 }

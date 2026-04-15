@@ -1,0 +1,44 @@
+/* DotGrid (React Bits → vanilla): фоновый слой, pointer-events не блокирует UI */
+.dot-grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.dot-grid__wrap {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.dot-grid__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.dot-grid-root {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: screen;
+}
+
+html.theme-light .dot-grid-root,
+html[data-theme="light"] .dot-grid-root {
+  opacity: 0.22;
+  mix-blend-mode: multiply;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot-grid-root {
+    opacity: 0.12;
+  }
+}
