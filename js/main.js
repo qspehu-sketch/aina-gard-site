@@ -144,18 +144,18 @@
       var reduce = prefersReducedMotion();
       return {
         reduce: reduce,
-        maxDist: reduce ? 108 : 168,
-        baseLine: reduce ? 0.18 : 0.3,
-        musicBoost: document.body.classList.contains("music-on") ? 1.12 : 1,
-        magnetR: reduce ? 138 : 310,
-        magnetPull: reduce ? 0.48 : 2.05,
-        spring: reduce ? 0.11 : 0.048,
-        friction: reduce ? 0.8 : 0.9,
-        highlightR: reduce ? 160 : 340
+        maxDist: reduce ? 86 : 70,
+        baseLine: reduce ? 0.16 : 0.2,
+        musicBoost: document.body.classList.contains("music-on") ? 1.1 : 1,
+        magnetR: reduce ? 155 : 440,
+        magnetPull: reduce ? 0.55 : 3.15,
+        spring: reduce ? 0.12 : 0.042,
+        friction: reduce ? 0.82 : 0.91,
+        highlightR: reduce ? 175 : 460
       };
     }
 
-    /** Равномерная сетка + джиттер — рёбра стыкуются в «паутину», не разрозненные точки */
+    /** Мелкая сетка + джиттер (паутина); maxDist под шаг — много пересечений */
     function rebuild() {
       var rect = canvas.getBoundingClientRect();
       var rw = rect.width || window.innerWidth || 960;
@@ -168,11 +168,9 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       var reduce = prefersReducedMotion();
       var rnd = Math.random;
-      var pad = 14;
-      var targetPts = reduce ? 44 : 96;
-      var step = Math.sqrt((w * h) / targetPts);
-      step = Math.max(52, Math.min(86, step));
-      var jitter = step * 0.38;
+      var pad = 12;
+      var step = reduce ? 54 : 40;
+      var jitter = step * 0.32;
       particles = [];
       for (var cy = pad + step * 0.5; cy < h - pad; cy += step) {
         for (var cx = pad + step * 0.5; cx < w - pad; cx += step) {
@@ -187,9 +185,8 @@
             y: oy,
             vx: 0,
             vy: 0,
-            r: 0.45 + rnd() * 0.95,
-            bit:
-              rnd() < 0.055 ? (rnd() < 0.5 ? "0" : "1") : null
+            r: 0.2 + rnd() * 0.42,
+            bit: null
           });
         }
       }
@@ -273,34 +270,62 @@
       var edgeBoost;
       var alpha;
       var lw;
+      var cell = maxDist;
+      var buckets = {};
+      var bx;
+      var by;
+      var key;
+      var arr;
+      var k;
+      var ox;
+      var oy;
 
       for (i = 0; i < particles.length; i++) {
         p = particles[i];
-        for (j = i + 1; j < particles.length; j++) {
-          q = particles[j];
-          d = Math.hypot(p.x - q.x, p.y - q.y);
-          if (d > maxDist) continue;
-          var midx = (p.x + q.x) * 0.5;
-          var midy = (p.y + q.y) * 0.5;
-          mdM = mouse.active ? Math.hypot(mx - midx, my - midy) : 9999;
-          edgeBoost =
-            mouse.active && mdM < highlightR
-              ? Math.max(0, 1 - mdM / highlightR)
-              : 0;
-          alpha = (1 - d / maxDist) * baseLineAlpha * (1 + edgeBoost * 3.2);
-          lw = 0.88 + edgeBoost * 1.85 + (1 - d / maxDist) * 0.55;
-          if (edgeBoost > 0.18) {
-            ctx.strokeStyle =
-              "rgba(185, 248, 255, " + Math.min(0.92, alpha + 0.28) + ")";
-          } else {
-            ctx.strokeStyle = "rgba(95, 200, 255, " + alpha + ")";
+        bx = (p.x / cell) | 0;
+        by = (p.y / cell) | 0;
+        key = bx + "," + by;
+        if (!buckets[key]) buckets[key] = [];
+        buckets[key].push(i);
+      }
+
+      for (i = 0; i < particles.length; i++) {
+        p = particles[i];
+        bx = (p.x / cell) | 0;
+        by = (p.y / cell) | 0;
+        for (ox = -1; ox <= 1; ox++) {
+          for (oy = -1; oy <= 1; oy++) {
+            arr = buckets[bx + ox + "," + (by + oy)];
+            if (!arr) continue;
+            for (k = 0; k < arr.length; k++) {
+              j = arr[k];
+              if (j <= i) continue;
+              q = particles[j];
+              d = Math.hypot(p.x - q.x, p.y - q.y);
+              if (d > maxDist) continue;
+              var midx = (p.x + q.x) * 0.5;
+              var midy = (p.y + q.y) * 0.5;
+              mdM = mouse.active ? Math.hypot(mx - midx, my - midy) : 9999;
+              edgeBoost =
+                mouse.active && mdM < highlightR
+                  ? Math.max(0, 1 - mdM / highlightR)
+                  : 0;
+              alpha = (1 - d / maxDist) * baseLineAlpha * (1 + edgeBoost * 3.6);
+              lw = 0.5 + edgeBoost * 2.1 + (1 - d / maxDist) * 0.42;
+              if (edgeBoost > 0.12) {
+                ctx.strokeStyle =
+                  "rgba(195, 252, 255, " + Math.min(0.88, alpha + 0.32) + ")";
+              } else {
+                ctx.strokeStyle = "rgba(88, 195, 255, " + alpha + ")";
+              }
+              ctx.lineWidth = lw;
+              ctx.lineCap = "round";
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(q.x, q.y);
+              ctx.stroke();
+            }
           }
-          ctx.lineWidth = lw;
-          ctx.lineCap = "round";
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(q.x, q.y);
-          ctx.stroke();
         }
       }
 
@@ -309,25 +334,15 @@
         var dM = mouse.active ? Math.hypot(mx - p.x, my - p.y) : 9999;
         var hot =
           mouse.active && dM < magnetR ? Math.max(0, 1 - dM / magnetR) : 0;
-        var rad = p.r + hot * 3.2;
+        var rad = p.r + hot * 2.4;
         ctx.shadowColor = "rgba(120, 235, 255, 0.95)";
-        ctx.shadowBlur = hot > 0.06 ? 18 * hot : 0;
+        ctx.shadowBlur = hot > 0.05 ? 14 * hot : 0;
         ctx.fillStyle =
-          "rgba(195, 250, 255, " + (0.38 + hot * 0.58) + ")";
+          "rgba(185, 248, 255, " + (0.34 + hot * 0.55) + ")";
         ctx.beginPath();
         ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
-        if (p.bit && rad > 1.15) {
-          var fs = Math.max(6, Math.min(10, rad * 2.1));
-          ctx.font =
-            "600 " + fs + "px 'Plus Jakarta Sans', system-ui, sans-serif";
-          ctx.fillStyle =
-            "rgba(215, 252, 255, " + (0.36 + hot * 0.55) + ")";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText(p.bit, p.x, p.y + 0.5);
-        }
       }
 
       rafId = requestAnimationFrame(tick);
