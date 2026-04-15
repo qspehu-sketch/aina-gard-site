@@ -130,11 +130,6 @@
   var particlesJsRetries = 0;
 
   function destroyParticlesJs() {
-    var wrap = document.getElementById("particles-js");
-    var oldCanvas = wrap ? wrap.querySelector("canvas") : null;
-    if (oldCanvas && oldCanvas.parentNode) {
-      oldCanvas.parentNode.removeChild(oldCanvas);
-    }
     if (window.pJSDom && window.pJSDom.length) {
       window.pJSDom.forEach(function (p) {
         try {
@@ -143,7 +138,17 @@
           }
         } catch (err) {}
       });
-      window.pJSDom = [];
+    }
+    /* библиотека обнуляет pJSDom в null — без массива второй вызов particlesJS падает */
+    window.pJSDom = [];
+    var wrap = document.getElementById("particles-js");
+    if (wrap) {
+      var rest = wrap.querySelectorAll("canvas");
+      for (var ri = 0; ri < rest.length; ri++) {
+        try {
+          if (rest[ri].parentNode) rest[ri].parentNode.removeChild(rest[ri]);
+        } catch (e2) {}
+      }
     }
   }
 
@@ -172,6 +177,7 @@
     }
 
     destroyParticlesJs();
+    if (!window.pJSDom) window.pJSDom = [];
 
     window.particlesJS("particles-js", {
       particles: {
