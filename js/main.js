@@ -127,9 +127,10 @@
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
-  /** Нити + orb: слой нитей целиком (.bg-threads) + orb; mouse/pointer/touch */
+  /** Сеть нитей + orb: внешний слой + внутренняя группа (сильнее «тянет» к курсору) */
   function initGlobalPointerAmbient() {
     var threadsRoot = document.querySelector(".bg-threads");
+    var threadsGroup = document.querySelector(".bg-threads-group");
     var shift = document.querySelector(".bg-threads-shift");
     var o1 = document.querySelector(".bg-orb-1");
     var o2 = document.querySelector(".bg-orb-2");
@@ -138,8 +139,10 @@
     var reduce = prefersReducedMotion();
     var tMul = reduce ? 0.35 : 1;
     var oMul = reduce ? 0.4 : 1;
-    var pxX = reduce ? 36 : 110;
-    var pxY = reduce ? 28 : 85;
+    var pxX = reduce ? 42 : 150;
+    var pxY = reduce ? 32 : 115;
+    var pullGX = reduce ? 14 : 52;
+    var pullGY = reduce ? 11 : 40;
 
     function applyFromPoint(clientX, clientY) {
       var w = window.innerWidth || 1;
@@ -148,10 +151,16 @@
       var ny = (clientY / h - 0.5) * 2;
       var tx = nx * pxX * tMul;
       var ty = ny * pxY * tMul;
+      var gx = nx * pullGX * tMul;
+      var gy = ny * pullGY * tMul;
 
       if (threadsRoot) {
         threadsRoot.style.transform =
           "translate3d(" + tx + "px, " + ty + "px, 0)";
+      }
+      if (threadsGroup) {
+        threadsGroup.style.transform =
+          "translate3d(" + gx + "px, " + gy + "px, 0)";
       }
       if (shift) {
         shift.style.transform = "";

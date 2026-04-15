@@ -38,34 +38,100 @@
       <div class="bg-threads-drift">
       <svg class="bg-threads-svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
-          <linearGradient id="threadGradA" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#4a9fd9" stop-opacity="0" />
-            <stop offset="35%" stop-color="#6ec8ff" stop-opacity="0.85" />
-            <stop offset="70%" stop-color="#c4a8ff" stop-opacity="0.55" />
-            <stop offset="100%" stop-color="#f0a8d8" stop-opacity="0" />
+          <linearGradient id="netLineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#4ad8ff" stop-opacity="0.35" />
+            <stop offset="35%" stop-color="#7ee0ff" stop-opacity="0.95" />
+            <stop offset="62%" stop-color="#b8a8ff" stop-opacity="0.88" />
+            <stop offset="100%" stop-color="#f8a8e8" stop-opacity="0.55" />
           </linearGradient>
-          <linearGradient id="threadGradB" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#f0a8d8" stop-opacity="0" />
-            <stop offset="45%" stop-color="#e879a8" stop-opacity="0.65" />
-            <stop offset="100%" stop-color="#6ec8ff" stop-opacity="0" />
+          <linearGradient id="netNodeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#b8f0ff" />
+            <stop offset="100%" stop-color="#e8b8ff" />
           </linearGradient>
+          <radialGradient id="netNodeGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+            <stop offset="45%" stop-color="#7ee0ff" stop-opacity="0.75" />
+            <stop offset="100%" stop-color="#7ee0ff" stop-opacity="0" />
+          </radialGradient>
+          <filter id="netNeonBloom" x="-120%" y="-120%" width="340%" height="340%" color-interpolation-filters="sRGB">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2.2" result="b1" />
+            <feGaussianBlur in="b1" stdDeviation="4" result="b2" />
+            <feMerge>
+              <feMergeNode in="b2" />
+              <feMergeNode in="b1" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
         </defs>
         <g class="bg-threads-group">
-          <path class="bg-thread-path" d="M -120 280 Q 420 80 960 420 T 2040 300" fill="none" stroke="url(#threadGradA)" stroke-width="2" stroke-linecap="round" opacity="0.28">
-            <animate attributeName="opacity" values="0.1;0.16;0.12;0.15;0.11;0.16;0.1" keyTimes="0;0.16;0.32;0.48;0.64;0.82;1" dur="22s" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1" />
-          </path>
-          <path class="bg-thread-path bg-thread-path--slow" d="M -80 720 Q 640 920 1180 580 T 2100 680" fill="none" stroke="url(#threadGradB)" stroke-width="1.75" stroke-linecap="round" opacity="0.24">
-            <animate attributeName="opacity" values="0.08;0.14;0.1;0.14;0.09;0.13;0.08" keyTimes="0;0.18;0.35;0.52;0.68;0.86;1" dur="28s" begin="-4s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" />
-          </path>
-          <path class="bg-thread-path" d="M 520 -60 Q 320 380 680 1120" fill="none" stroke="url(#threadGradA)" stroke-width="1.6" stroke-linecap="round" opacity="0.22">
-            <animate attributeName="opacity" values="0.08;0.14;0.09;0.14;0.08;0.13;0.08" keyTimes="0;0.17;0.33;0.5;0.67;0.84;1" dur="19s" begin="-9s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1" />
-          </path>
-          <path class="bg-thread-path bg-thread-path--slow" d="M 1980 120 Q 1500 400 1280 1040" fill="none" stroke="url(#threadGradB)" stroke-width="1.7" stroke-linecap="round" opacity="0.22">
-            <animate attributeName="opacity" values="0.09;0.15;0.1;0.15;0.09;0.14;0.09" keyTimes="0;0.15;0.3;0.48;0.62;0.8;1" dur="26s" begin="-12s" repeatCount="indefinite" calcMode="spline" keySplines="0.43 0 0.57 1;0.43 0 0.57 1;0.43 0 0.57 1;0.43 0 0.57 1;0.43 0 0.57 1;0.43 0 0.57 1" />
-          </path>
-          <path class="bg-thread-path" d="M 200 1080 Q 960 520 1720 200" fill="none" stroke="url(#threadGradA)" stroke-width="1.45" stroke-linecap="round" opacity="0.2">
-            <animate attributeName="opacity" values="0.07;0.12;0.08;0.13;0.07;0.12;0.07" keyTimes="0;0.2;0.36;0.54;0.7;0.88;1" dur="24s" begin="-2s" repeatCount="indefinite" calcMode="spline" keySplines="0.41 0 0.59 1;0.41 0 0.59 1;0.41 0 0.59 1;0.41 0 0.59 1;0.41 0 0.59 1;0.41 0 0.59 1" />
-          </path>
+          <!-- Сетка как «интернет»: рёбра + узлы, неон -->
+          <g class="bg-net-layer bg-net-layer--glow" filter="url(#netNeonBloom)" opacity="0.92">
+            <path
+              class="bg-net-mesh bg-net-mesh--h"
+              fill="none"
+              stroke="url(#netLineGrad)"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M-60,130 L1980,130 M-60,268 L1980,268 M-60,406 L1980,406 M-60,544 L1980,544 M-60,682 L1980,682 M-60,820 L1980,820 M-60,958 L1980,958"
+            />
+            <path
+              class="bg-net-mesh bg-net-mesh--v"
+              fill="none"
+              stroke="url(#netLineGrad)"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M140,-40 L140,1120 M340,-40 L340,1120 M540,-40 L540,1120 M740,-40 L740,1120 M960,-40 L960,1120 M1180,-40 L1180,1120 M1380,-40 L1380,1120 M1580,-40 L1580,1120 M1780,-40 L1780,1120"
+            />
+            <path
+              class="bg-net-mesh bg-net-mesh--diag"
+              fill="none"
+              stroke="url(#netLineGrad)"
+              stroke-width="1.65"
+              stroke-linecap="round"
+              d="M-40,380 L420,120 M320,1120 L760,720 M520,-20 L980,420 M1080,1100 L1520,620 M1520,-20 L1980,340 M-20,720 L380,420 M1180,180 L1680,520 M820,980 L1320,620"
+            />
+          </g>
+          <path
+            class="bg-net-mesh bg-net-mesh--core"
+            fill="none"
+            stroke="rgba(200, 240, 255, 0.55)"
+            stroke-width="0.9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M-60,130 L1980,130 M-60,268 L1980,268 M-60,406 L1980,406 M-60,544 L1980,544 M-60,682 L1980,682 M-60,820 L1980,820 M-60,958 L1980,958 M140,-40 L140,1120 M340,-40 L340,1120 M540,-40 L540,1120 M740,-40 L740,1120 M960,-40 L960,1120 M1180,-40 L1180,1120 M1380,-40 L1380,1120 M1580,-40 L1580,1120 M1780,-40 L1780,1120 M-40,380 L420,120 M320,1120 L760,720 M520,-20 L980,420 M1080,1100 L1520,620 M1520,-20 L1980,340 M-20,720 L380,420 M1180,180 L1680,520 M820,980 L1320,620"
+          />
+          <path
+            class="bg-net-flow"
+            fill="none"
+            stroke="rgba(180, 235, 255, 0.22)"
+            stroke-width="1.2"
+            stroke-linecap="round"
+            stroke-dasharray="6 22"
+            d="M-60,406 L1980,406 M740,-40 L740,1120 M-40,380 L420,120 M1180,-40 L1180,1120 M820,980 L1320,620"
+          />
+          <g class="bg-net-nodes" fill="url(#netNodeGrad)">
+            <circle class="bg-net-node" cx="140" cy="130" r="4" />
+            <circle class="bg-net-node" cx="340" cy="268" r="3.5" />
+            <circle class="bg-net-node" cx="540" cy="406" r="4" />
+            <circle class="bg-net-node" cx="740" cy="544" r="3.5" />
+            <circle class="bg-net-node" cx="960" cy="268" r="5" />
+            <circle class="bg-net-node" cx="1180" cy="682" r="4" />
+            <circle class="bg-net-node" cx="1380" cy="406" r="3.5" />
+            <circle class="bg-net-node" cx="1580" cy="820" r="4" />
+            <circle class="bg-net-node" cx="1780" cy="544" r="3.5" />
+            <circle class="bg-net-node" cx="960" cy="820" r="4.5" />
+            <circle class="bg-net-node" cx="340" cy="958" r="3.5" />
+            <circle class="bg-net-node" cx="1580" cy="130" r="3.5" />
+          </g>
+          <g class="bg-net-node-halos" fill="url(#netNodeGlow)" pointer-events="none">
+            <circle cx="140" cy="130" r="14" opacity="0.35" />
+            <circle cx="960" cy="268" r="22" opacity="0.28" />
+            <circle cx="960" cy="820" r="20" opacity="0.3" />
+            <circle cx="540" cy="406" r="16" opacity="0.32" />
+            <circle cx="1380" cy="406" r="16" opacity="0.28" />
+          </g>
         </g>
       </svg>
       </div>

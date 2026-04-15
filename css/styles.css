@@ -340,15 +340,131 @@ body.music-on .bg-threads-drift {
   height: 100%;
   display: block;
   filter:
-    drop-shadow(0 0 8px rgba(110, 200, 255, 0.35))
-    drop-shadow(0 0 14px rgba(196, 168, 255, 0.22))
-    drop-shadow(0 0 20px rgba(240, 168, 216, 0.15));
+    drop-shadow(0 0 10px rgba(100, 210, 255, 0.42))
+    drop-shadow(0 0 22px rgba(160, 140, 255, 0.28))
+    drop-shadow(0 0 36px rgba(240, 170, 220, 0.18));
 }
 
 body.music-on .bg-threads-svg {
   filter:
-    drop-shadow(0 0 10px rgba(110, 200, 255, 0.45))
-    drop-shadow(0 0 18px rgba(240, 168, 216, 0.28));
+    drop-shadow(0 0 12px rgba(100, 220, 255, 0.5))
+    drop-shadow(0 0 26px rgba(200, 150, 255, 0.32))
+    drop-shadow(0 0 42px rgba(248, 180, 220, 0.22));
+}
+
+.bg-threads-group {
+  transform-origin: 50% 45%;
+  will-change: transform;
+}
+
+.bg-net-layer--glow .bg-net-mesh {
+  opacity: 0.72;
+  animation: netMeshPulseIdle 14s ease-in-out infinite alternate;
+}
+
+body.music-on .bg-net-layer--glow .bg-net-mesh {
+  animation: netMeshPulseMusic 9s ease-in-out infinite alternate;
+}
+
+.bg-net-mesh--core {
+  opacity: 0.5;
+  animation: netCorePulseIdle 11s ease-in-out infinite alternate;
+}
+
+body.music-on .bg-net-mesh--core {
+  animation: netCorePulseMusic 7s ease-in-out infinite alternate;
+}
+
+.bg-net-flow {
+  animation: netFlowDashIdle 22s linear infinite;
+}
+
+body.music-on .bg-net-flow {
+  animation: netFlowDashMusic 14s linear infinite;
+}
+
+.bg-net-node {
+  opacity: 0.85;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: netNodeTwinkleIdle 5.5s ease-in-out infinite;
+}
+
+body.music-on .bg-net-node {
+  animation-duration: 3.6s;
+}
+
+.bg-net-node:nth-child(2) { animation-delay: -0.7s; }
+.bg-net-node:nth-child(3) { animation-delay: -1.4s; }
+.bg-net-node:nth-child(4) { animation-delay: -2.1s; }
+.bg-net-node:nth-child(5) { animation-delay: -2.8s; }
+.bg-net-node:nth-child(6) { animation-delay: -3.4s; }
+.bg-net-node:nth-child(7) { animation-delay: -0.3s; }
+.bg-net-node:nth-child(8) { animation-delay: -1.9s; }
+.bg-net-node:nth-child(9) { animation-delay: -4.1s; }
+.bg-net-node:nth-child(10) { animation-delay: -2.5s; }
+.bg-net-node:nth-child(11) { animation-delay: -0.9s; }
+.bg-net-node:nth-child(12) { animation-delay: -3.8s; }
+
+.bg-net-node-halos circle {
+  animation: netHaloBreathIdle 10s ease-in-out infinite alternate;
+}
+
+body.music-on .bg-net-node-halos circle {
+  animation: netHaloBreathMusic 6.5s ease-in-out infinite alternate;
+}
+
+.bg-net-node-halos circle:nth-child(2) { animation-delay: -2s; }
+.bg-net-node-halos circle:nth-child(3) { animation-delay: -4s; }
+.bg-net-node-halos circle:nth-child(4) { animation-delay: -1s; }
+.bg-net-node-halos circle:nth-child(5) { animation-delay: -3s; }
+
+@keyframes netMeshPulseIdle {
+  0% { opacity: 0.58; }
+  100% { opacity: 0.82; }
+}
+
+@keyframes netMeshPulseMusic {
+  0% { opacity: 0.62; }
+  100% { opacity: 0.9; }
+}
+
+@keyframes netCorePulseIdle {
+  0% { opacity: 0.38; }
+  100% { opacity: 0.62; }
+}
+
+@keyframes netCorePulseMusic {
+  0% { opacity: 0.42; }
+  100% { opacity: 0.72; }
+}
+
+@keyframes netFlowDashIdle {
+  0% { stroke-dashoffset: 0; opacity: 0.14; }
+  50% { opacity: 0.28; }
+  100% { stroke-dashoffset: -280; opacity: 0.14; }
+}
+
+@keyframes netFlowDashMusic {
+  0% { stroke-dashoffset: 0; opacity: 0.18; }
+  50% { opacity: 0.38; }
+  100% { stroke-dashoffset: -280; opacity: 0.18; }
+}
+
+@keyframes netNodeTwinkleIdle {
+  0%,
+  100% { opacity: 0.45; transform: scale(0.92); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+@keyframes netHaloBreathIdle {
+  0% { opacity: 0.18; }
+  100% { opacity: 0.42; }
+}
+
+@keyframes netHaloBreathMusic {
+  0% { opacity: 0.22; }
+  100% { opacity: 0.52; }
 }
 
 /* Мерцание нитей — SMIL <animate> в index.html; здесь только плавный дрейф всего SVG */
@@ -554,7 +670,10 @@ body.music-on .bg-noise {
   .bg-threads-drift,
   .bg-threads-svg,
   .bg-threads-group,
-  .bg-thread-path,
+  .bg-net-mesh,
+  .bg-net-flow,
+  .bg-net-node,
+  .bg-net-node-halos circle,
   .bg-grid,
   .bg-circuit,
   .bg-noise {
@@ -578,12 +697,11 @@ body.music-on .bg-noise {
     opacity: 0.85;
     transform: none !important;
   }
-  .bg-threads svg animate { display: none !important; }
-  .bg-threads-group .bg-thread-path:nth-child(1) { opacity: 0.55 !important; }
-  .bg-threads-group .bg-thread-path:nth-child(2) { opacity: 0.45 !important; }
-  .bg-threads-group .bg-thread-path:nth-child(3) { opacity: 0.4 !important; }
-  .bg-threads-group .bg-thread-path:nth-child(4) { opacity: 0.42 !important; }
-  .bg-threads-group .bg-thread-path:nth-child(5) { opacity: 0.38 !important; }
+  .bg-net-layer--glow .bg-net-mesh { opacity: 0.78 !important; }
+  .bg-net-mesh--core { opacity: 0.62 !important; }
+  .bg-net-flow { opacity: 0.22 !important; stroke-dashoffset: 0 !important; }
+  .bg-net-node { opacity: 0.88 !important; transform: none !important; }
+  .bg-net-node-halos circle { opacity: 0.35 !important; }
   .bg-grid { opacity: 0.2; }
   .bg-circuit { opacity: 0.1; }
   .bg-noise { opacity: 0.038; }
