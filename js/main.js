@@ -127,282 +127,107 @@
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
-  /** Canvas plexus: рёбра по расстоянию, пружина к (ox,oy), магнит и подсветка у курсора */
-  function initPlexusBackground() {
-    var canvas = document.getElementById("bgPlexus");
-    if (!canvas || !canvas.getContext) return;
-    var ctx = canvas.getContext("2d");
-    var particles = [];
-    var mouse = { x: 0, y: 0, active: false };
-    var w = 300;
-    var h = 200;
-    var dpr = 1;
-    var running = true;
-    var rafId = 0;
+  var particlesJsRetries = 0;
 
-    function cfg() {
-      var reduce = prefersReducedMotion();
-      return {
-        reduce: reduce,
-        maxDist: reduce ? 86 : 70,
-        baseLine: reduce ? 0.16 : 0.2,
-        musicBoost: document.body.classList.contains("music-on") ? 1.1 : 1,
-        magnetR: reduce ? 155 : 440,
-        magnetPull: reduce ? 0.55 : 3.15,
-        spring: reduce ? 0.12 : 0.042,
-        friction: reduce ? 0.82 : 0.91,
-        highlightR: reduce ? 175 : 460
-      };
+  function destroyParticlesJs() {
+    var wrap = document.getElementById("particles-js");
+    var oldCanvas = wrap ? wrap.querySelector("canvas") : null;
+    if (oldCanvas && oldCanvas.parentNode) {
+      oldCanvas.parentNode.removeChild(oldCanvas);
     }
-
-    /** Мелкая сетка + джиттер (паутина); maxDist под шаг — много пересечений */
-    function rebuild() {
-      var rect = canvas.getBoundingClientRect();
-      var rw = rect.width || window.innerWidth || 960;
-      var rh = rect.height || window.innerHeight || 540;
-      dpr = Math.min(2, window.devicePixelRatio || 1);
-      w = Math.max(320, Math.floor(rw));
-      h = Math.max(240, Math.floor(rh));
-      canvas.width = Math.floor(w * dpr);
-      canvas.height = Math.floor(h * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var reduce = prefersReducedMotion();
-      var rnd = Math.random;
-      var pad = 12;
-      var step = reduce ? 54 : 40;
-      var jitter = step * 0.32;
-      particles = [];
-      for (var cy = pad + step * 0.5; cy < h - pad; cy += step) {
-        for (var cx = pad + step * 0.5; cx < w - pad; cx += step) {
-          var ox = cx + (rnd() - 0.5) * jitter;
-          var oy = cy + (rnd() - 0.5) * jitter;
-          ox = Math.min(w - pad, Math.max(pad, ox));
-          oy = Math.min(h - pad, Math.max(pad, oy));
-          particles.push({
-            ox: ox,
-            oy: oy,
-            x: ox,
-            y: oy,
-            vx: 0,
-            vy: 0,
-            r: 0.2 + rnd() * 0.42,
-            bit: null
-          });
-        }
-      }
-    }
-
-    function setMouseFromClient(clientX, clientY, rect) {
-      if (
-        clientX < rect.left - 32 ||
-        clientX > rect.right + 32 ||
-        clientY < rect.top - 32 ||
-        clientY > rect.bottom + 32
-      ) {
-        mouse.active = false;
-        return;
-      }
-      mouse.x = (clientX - rect.left) * (w / rect.width);
-      mouse.y = (clientY - rect.top) * (h / rect.height);
-      mouse.active = true;
-    }
-
-    function onPointerMove(e) {
-      var rect = canvas.getBoundingClientRect();
-      if (typeof e.clientX !== "number") return;
-      setMouseFromClient(e.clientX, e.clientY, rect);
-    }
-
-    function onPointerLeaveTouch() {
-      mouse.active = false;
-    }
-
-    function onTouchStart(e) {
-      var t = e.touches && e.touches[0];
-      if (!t) return;
-      var rect = canvas.getBoundingClientRect();
-      setMouseFromClient(t.clientX, t.clientY, rect);
-    }
-
-    function tick() {
-      rafId = 0;
-      if (!running) return;
-      var c = cfg();
-      var mx = mouse.x;
-      var my = mouse.y;
-      var magnetR = c.magnetR;
-      var magnetPull = c.magnetPull * c.musicBoost;
-      var spring = c.spring;
-      var friction = c.friction;
-      var i;
-      var p;
-      for (i = 0; i < particles.length; i++) {
-        p = particles[i];
-        var dx = p.ox - p.x;
-        var dy = p.oy - p.y;
-        p.vx += dx * spring;
-        p.vy += dy * spring;
-        if (mouse.active) {
-          var mdx = mx - p.x;
-          var mdy = my - p.y;
-          var md = Math.hypot(mdx, mdy);
-          if (md < magnetR && md > 0.001) {
-            var t = 1 - md / magnetR;
-            var f = t * t * magnetPull;
-            p.vx += (mdx / md) * f;
-            p.vy += (mdy / md) * f;
+    if (window.pJSDom && window.pJSDom.length) {
+      window.pJSDom.forEach(function (p) {
+        try {
+          if (p.pJS && p.pJS.fn && p.pJS.fn.vendors && p.pJS.fn.vendors.destroypJS) {
+            p.pJS.fn.vendors.destroypJS();
           }
-        }
-        p.vx *= friction;
-        p.vy *= friction;
-        p.x += p.vx;
-        p.y += p.vy;
-      }
-
-      ctx.clearRect(0, 0, w, h);
-      var maxDist = c.maxDist;
-      var baseLineAlpha = c.baseLine * c.musicBoost;
-      var highlightR = c.highlightR;
-      var j;
-      var q;
-      var d;
-      var mdM;
-      var edgeBoost;
-      var alpha;
-      var lw;
-      var cell = maxDist;
-      var buckets = {};
-      var bx;
-      var by;
-      var key;
-      var arr;
-      var k;
-      var ox;
-      var oy;
-
-      for (i = 0; i < particles.length; i++) {
-        p = particles[i];
-        bx = (p.x / cell) | 0;
-        by = (p.y / cell) | 0;
-        key = bx + "," + by;
-        if (!buckets[key]) buckets[key] = [];
-        buckets[key].push(i);
-      }
-
-      for (i = 0; i < particles.length; i++) {
-        p = particles[i];
-        bx = (p.x / cell) | 0;
-        by = (p.y / cell) | 0;
-        for (ox = -1; ox <= 1; ox++) {
-          for (oy = -1; oy <= 1; oy++) {
-            arr = buckets[bx + ox + "," + (by + oy)];
-            if (!arr) continue;
-            for (k = 0; k < arr.length; k++) {
-              j = arr[k];
-              if (j <= i) continue;
-              q = particles[j];
-              d = Math.hypot(p.x - q.x, p.y - q.y);
-              if (d > maxDist) continue;
-              var midx = (p.x + q.x) * 0.5;
-              var midy = (p.y + q.y) * 0.5;
-              mdM = mouse.active ? Math.hypot(mx - midx, my - midy) : 9999;
-              edgeBoost =
-                mouse.active && mdM < highlightR
-                  ? Math.max(0, 1 - mdM / highlightR)
-                  : 0;
-              alpha = (1 - d / maxDist) * baseLineAlpha * (1 + edgeBoost * 3.6);
-              lw = 0.5 + edgeBoost * 2.1 + (1 - d / maxDist) * 0.42;
-              if (edgeBoost > 0.12) {
-                ctx.strokeStyle =
-                  "rgba(195, 252, 255, " + Math.min(0.88, alpha + 0.32) + ")";
-              } else {
-                ctx.strokeStyle = "rgba(88, 195, 255, " + alpha + ")";
-              }
-              ctx.lineWidth = lw;
-              ctx.lineCap = "round";
-              ctx.beginPath();
-              ctx.moveTo(p.x, p.y);
-              ctx.lineTo(q.x, q.y);
-              ctx.stroke();
-            }
-          }
-        }
-      }
-
-      for (i = 0; i < particles.length; i++) {
-        p = particles[i];
-        var dM = mouse.active ? Math.hypot(mx - p.x, my - p.y) : 9999;
-        var hot =
-          mouse.active && dM < magnetR ? Math.max(0, 1 - dM / magnetR) : 0;
-        var rad = p.r + hot * 2.4;
-        ctx.shadowColor = "rgba(120, 235, 255, 0.95)";
-        ctx.shadowBlur = hot > 0.05 ? 14 * hot : 0;
-        ctx.fillStyle =
-          "rgba(185, 248, 255, " + (0.34 + hot * 0.55) + ")";
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      }
-
-      rafId = requestAnimationFrame(tick);
+        } catch (err) {}
+      });
+      window.pJSDom = [];
     }
-
-    function startLoop() {
-      if (!rafId && running) rafId = requestAnimationFrame(tick);
-    }
-
-    rebuild();
-    startLoop();
-
-    window.addEventListener("load", function () {
-      rebuild();
-    });
-
-    requestAnimationFrame(function () {
-      rebuild();
-    });
-
-    window.addEventListener(
-      "resize",
-      function () {
-        rebuild();
-      },
-      { passive: true }
-    );
-
-    document.addEventListener("pointermove", onPointerMove, { passive: true });
-    document.addEventListener("pointerdown", onPointerMove, { passive: true });
-    document.addEventListener("pointerup", function (e) {
-      if (e.pointerType === "touch") onPointerLeaveTouch();
-    }, { passive: true });
-    document.addEventListener("pointercancel", onPointerLeaveTouch, {
-      passive: true
-    });
-    document.addEventListener("touchstart", onTouchStart, { passive: true });
-    document.addEventListener(
-      "touchmove",
-      function (e) {
-        var t = e.touches && e.touches[0];
-        if (!t) return;
-        var rect = canvas.getBoundingClientRect();
-        setMouseFromClient(t.clientX, t.clientY, rect);
-      },
-      { passive: true }
-    );
-    document.addEventListener("touchend", onPointerLeaveTouch, {
-      passive: true
-    });
-
-    document.addEventListener("visibilitychange", function () {
-      running = !document.hidden;
-      if (running) startLoop();
-    });
-
-    var rect0 = canvas.getBoundingClientRect();
-    mouse.x = rect0.width * 0.5;
-    mouse.y = rect0.height * 0.46;
   }
+
+  /** particles.js: палитра лендинга; detect_on window — клики по карточкам не блокируются */
+  function initParticlesBackground() {
+    if (!document.getElementById("particles-js")) return;
+    if (typeof window.particlesJS !== "function") {
+      if (particlesJsRetries++ < 32) {
+        setTimeout(initParticlesBackground, 150);
+      }
+      return;
+    }
+    particlesJsRetries = 0;
+
+    var reduce = prefersReducedMotion();
+    var music = document.body.classList.contains("music-on");
+
+    var colors = {
+      particles: "#6ec8ff",
+      lines: "#9ecfff",
+      stroke: "rgba(196, 168, 255, 0.5)"
+    };
+    if (music) {
+      colors.particles = "#7ed8ff";
+      colors.lines = "#b8dcff";
+    }
+
+    destroyParticlesJs();
+
+    window.particlesJS("particles-js", {
+      particles: {
+        number: {
+          value: reduce ? 46 : 128,
+          density: { enable: true, value_area: reduce ? 1150 : 750 }
+        },
+        color: { value: colors.particles },
+        shape: {
+          type: "circle",
+          stroke: { width: 0.45, color: colors.stroke }
+        },
+        opacity: {
+          value: reduce ? 0.42 : 0.56,
+          random: true,
+          anim: { enable: !reduce, speed: 0.8, opacity_min: 0.2 }
+        },
+        size: {
+          value: reduce ? 1.8 : 2.5,
+          random: true,
+          anim: { enable: !reduce, speed: 1.2, size_min: 0.6 }
+        },
+        line_linked: {
+          enable: true,
+          distance: reduce ? 112 : 150,
+          color: colors.lines,
+          opacity: reduce ? 0.26 : music ? 0.44 : 0.34,
+          width: reduce ? 0.55 : 0.92
+        },
+        move: {
+          enable: true,
+          speed: reduce ? 0.4 : 1.45,
+          direction: "none",
+          random: true,
+          straight: false,
+          out_mode: "out",
+          bounce: false
+        }
+      },
+      interactivity: {
+        detect_on: "window",
+        events: {
+          onhover: { enable: !reduce, mode: "grab" },
+          onclick: { enable: !reduce, mode: "push" },
+          resize: true
+        },
+        modes: {
+          grab: { distance: 205, line_linked: { opacity: music ? 0.78 : 0.62 } },
+          push: { particles_nb: reduce ? 0 : 4 },
+          repulse: { distance: 150, duration: 0.35 }
+        }
+      },
+      retina_detect: true
+    });
+  }
+
 
   /** Лёгкий параллакс слоя сети + orb */
   function initGlobalPointerAmbient() {
@@ -578,6 +403,8 @@
             document.body.classList.add("music-on");
             soundLabel.textContent = t.sound_off;
             btnSound.setAttribute("aria-label", t.ariaSoundOff);
+            clearTimeout(toggleSound._particlesT);
+            toggleSound._particlesT = setTimeout(initParticlesBackground, 120);
           })
           .catch(function (err) {
             console.warn("[audio] play blocked or failed:", err);
@@ -592,6 +419,8 @@
       soundLabel.textContent = t.sound_on;
       btnSound.setAttribute("aria-label", t.ariaSoundOn);
     }
+    clearTimeout(toggleSound._particlesT);
+    toggleSound._particlesT = setTimeout(initParticlesBackground, 120);
   }
 
   if (btnSound) btnSound.addEventListener("click", toggleSound);
@@ -630,7 +459,7 @@
     });
   }
 
-  initPlexusBackground();
+  initParticlesBackground();
   initGlobalPointerAmbient();
   initCardWowEffects();
   applyLinks();
