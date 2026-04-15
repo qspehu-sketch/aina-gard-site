@@ -131,7 +131,7 @@
   function initPlexusBackground() {
     var canvas = document.getElementById("bgPlexus");
     if (!canvas || !canvas.getContext) return;
-    var ctx = canvas.getContext("2d", { alpha: true });
+    var ctx = canvas.getContext("2d");
     var particles = [];
     var mouse = { x: 0, y: 0, active: false };
     var w = 300;
@@ -145,7 +145,7 @@
       return {
         reduce: reduce,
         maxDist: reduce ? 98 : 118,
-        baseLine: reduce ? 0.11 : 0.16,
+        baseLine: reduce ? 0.14 : 0.22,
         musicBoost: document.body.classList.contains("music-on") ? 1.14 : 1,
         magnetR: reduce ? 125 : 268,
         magnetPull: reduce ? 0.38 : 1.08,
@@ -164,9 +164,11 @@
 
     function rebuild() {
       var rect = canvas.getBoundingClientRect();
+      var rw = rect.width || window.innerWidth || 960;
+      var rh = rect.height || window.innerHeight || 540;
       dpr = Math.min(2, window.devicePixelRatio || 1);
-      w = Math.max(280, Math.floor(rect.width));
-      h = Math.max(200, Math.floor(rect.height));
+      w = Math.max(320, Math.floor(rw));
+      h = Math.max(240, Math.floor(rh));
       canvas.width = Math.floor(w * dpr);
       canvas.height = Math.floor(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -334,6 +336,14 @@
 
     rebuild();
     startLoop();
+
+    window.addEventListener("load", function () {
+      rebuild();
+    });
+
+    requestAnimationFrame(function () {
+      rebuild();
+    });
 
     window.addEventListener(
       "resize",
