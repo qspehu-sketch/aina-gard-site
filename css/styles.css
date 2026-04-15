@@ -364,14 +364,23 @@ body.music-on .bg-particles {
     drop-shadow(0 0 20px rgba(196, 168, 255, 0.14));
 }
 
+/* Телефон: без drop-shadow — меньше «радужных» полос от GPU */
+.bg-particles.bg-particles--lite-fx {
+  filter: none;
+}
+
+body.music-on .bg-particles.bg-particles--lite-fx {
+  filter: none;
+}
+
 @keyframes threadsLayerBreathIdle {
-  0% { opacity: 0.38; }
-  100% { opacity: 0.58; }
+  0% { opacity: 0.5; }
+  100% { opacity: 0.74; }
 }
 
 @keyframes threadsLayerBreathMusic {
-  0% { opacity: 0.48; }
-  100% { opacity: 0.68; }
+  0% { opacity: 0.56; }
+  100% { opacity: 0.8; }
 }
 
 /* Слой 3: сетка — drift + лёгкий glow pulse */

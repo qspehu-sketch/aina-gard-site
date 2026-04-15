@@ -127,6 +127,13 @@
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
+  function isParticlesMobileProfile() {
+    return (
+      window.matchMedia("(pointer: coarse)").matches ||
+      window.matchMedia("(max-width: 900px)").matches
+    );
+  }
+
   var particlesJsRetries = 0;
 
   function destroyParticlesJs() {
@@ -165,51 +172,79 @@
 
     var reduce = prefersReducedMotion();
     var music = document.body.classList.contains("music-on");
+    var mobile = isParticlesMobileProfile();
 
     var colors = {
       particles: "#6ec8ff",
-      lines: "#9ecfff",
-      stroke: "rgba(196, 168, 255, 0.5)"
+      lines: "#8fd4ff",
+      stroke: "rgba(196, 168, 255, 0.45)"
     };
     if (music) {
       colors.particles = "#7ed8ff";
-      colors.lines = "#b8dcff";
+      colors.lines = "#a8dcff";
     }
+    if (mobile) {
+      colors.lines = colors.particles;
+      colors.stroke = "rgba(110, 200, 255, 0.35)";
+    }
+
+    var wrap = document.getElementById("particles-js");
+    if (wrap) wrap.classList.toggle("bg-particles--lite-fx", mobile);
 
     destroyParticlesJs();
     if (!window.pJSDom) window.pJSDom = [];
 
+    var numDesktop = reduce ? 52 : 148;
+    var areaDesktop = reduce ? 1050 : 560;
+    var numMobile = reduce ? 44 : 72;
+    var areaMobile = reduce ? 1200 : 980;
+
     window.particlesJS("particles-js", {
       particles: {
         number: {
-          value: reduce ? 46 : 128,
-          density: { enable: true, value_area: reduce ? 1150 : 750 }
+          value: mobile ? numMobile : numDesktop,
+          density: {
+            enable: true,
+            value_area: mobile ? areaMobile : areaDesktop
+          }
         },
         color: { value: colors.particles },
         shape: {
           type: "circle",
-          stroke: { width: 0.45, color: colors.stroke }
+          stroke: { width: mobile ? 0.25 : 0.5, color: colors.stroke }
         },
         opacity: {
-          value: reduce ? 0.42 : 0.56,
-          random: true,
-          anim: { enable: !reduce, speed: 0.8, opacity_min: 0.2 }
+          value: mobile ? 0.52 : reduce ? 0.5 : 0.78,
+          random: !mobile,
+          anim: {
+            enable: !mobile && !reduce,
+            speed: 0.55,
+            opacity_min: 0.38
+          }
         },
         size: {
-          value: reduce ? 1.8 : 2.5,
+          value: mobile ? 2 : reduce ? 2 : 2.8,
           random: true,
-          anim: { enable: !reduce, speed: 1.2, size_min: 0.6 }
+          anim: { enable: !mobile && !reduce, speed: 1, size_min: 0.65 }
         },
         line_linked: {
           enable: true,
-          distance: reduce ? 112 : 150,
+          distance: mobile ? 118 : reduce ? 105 : 168,
           color: colors.lines,
-          opacity: reduce ? 0.26 : music ? 0.44 : 0.34,
-          width: reduce ? 0.55 : 0.92
+          opacity: mobile
+            ? music
+              ? 0.48
+              : 0.4
+            : reduce
+              ? 0.34
+              : music
+                ? 0.62
+                : 0.55,
+          width: mobile ? 0.72 : reduce ? 0.65 : 1.15
         },
         move: {
           enable: true,
-          speed: reduce ? 0.4 : 1.45,
+          speed: mobile ? 0.85 : reduce ? 0.35 : 1.2,
           direction: "none",
           random: true,
           straight: false,
@@ -220,13 +255,16 @@
       interactivity: {
         detect_on: "window",
         events: {
-          onhover: { enable: !reduce, mode: "grab" },
+          onhover: { enable: true, mode: "grab" },
           onclick: { enable: !reduce, mode: "push" },
           resize: true
         },
         modes: {
-          grab: { distance: 205, line_linked: { opacity: music ? 0.78 : 0.62 } },
-          push: { particles_nb: reduce ? 0 : 4 },
+          grab: {
+            distance: mobile ? 200 : 275,
+            line_linked: { opacity: mobile ? 0.88 : music ? 0.95 : 0.9 }
+          },
+          push: { particles_nb: reduce ? 0 : mobile ? 2 : 4 },
           repulse: { distance: 150, duration: 0.35 }
         }
       },
@@ -234,6 +272,15 @@
     });
   }
 
+  var resizeParticlesT;
+  window.addEventListener(
+    "resize",
+    function () {
+      clearTimeout(resizeParticlesT);
+      resizeParticlesT = setTimeout(initParticlesBackground, 320);
+    },
+    { passive: true }
+  );
 
   /** Лёгкий параллакс слоя сети + orb */
   function initGlobalPointerAmbient() {
