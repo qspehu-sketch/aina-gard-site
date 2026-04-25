@@ -27,7 +27,7 @@
     return String(Date.now()) + "-" + Math.random().toString(36).slice(2, 10);
   }
 
-  if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
+  if (!String(window.SUPABASE_URL || "").trim() || !String(window.SUPABASE_ANON_KEY || "").trim()) {
     setMsg(loginMsg, "Укажите SUPABASE_URL и SUPABASE_ANON_KEY в файле js/supabase-config.js.", "err");
     if (loginForm) loginForm.style.display = "none";
     return;
