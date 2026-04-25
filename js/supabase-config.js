@@ -1,3 +1,2 @@
-/* Только URL и ключ. Клиент создаётся в admin.js / supabase-public.js */
 window.SUPABASE_URL = "https://paafofajyarzwoinnsro.supabase.co";
-window.SUPABASE_ANON_KEY = "sb_publishable_Rd9q6kf-hKxmyKiPsJ2DbA_AjNXlJWF";
+window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBhYWZvZmFqeWFyendvaW5uc3JvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNzM4OTQsImV4cCI6MjA5MjY0OTg5NH0.xIxz4MIhOAx-8ZbaqeiaVUmxnzsVHam6_4TWjQAqpCo";
