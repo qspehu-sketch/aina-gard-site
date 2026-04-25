@@ -4,8 +4,7 @@
   position: relative;
   z-index: 4;
   padding: clamp(32px, 6vw, 72px) 0 clamp(48px, 8vw, 96px);
-  /* Плотный фон — не просвечивают точки/частицы, меньше визуального шума */
-  background: linear-gradient(180deg, rgba(3, 2, 8, 0.82) 0%, rgba(3, 2, 8, 0.96) 45%, rgba(3, 2, 8, 0.98) 100%);
+  background: transparent;
 }
 
 /* Форма сразу под шапкой hero */
