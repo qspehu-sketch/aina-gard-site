@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css?v=dotgrid1" />
-  <link rel="stylesheet" href="css/site-extras.css?v=3" />
+  <link rel="stylesheet" href="css/site-extras.css?v=4" />
 </head>
 <body>
   <div class="page-bg-under" aria-hidden="true">
@@ -64,36 +64,14 @@
               <a class="btn btn-primary" data-link="tg" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer">
                 <span data-i18n="btn_diag">Бесплатная консультация</span>
               </a>
+              <button type="button" class="btn btn-secondary" id="btnOpenLeadModal" data-i18n="lead_open_btn">
+                Оставить заявку
+              </button>
               <a class="btn btn-secondary" data-link="portfolio" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer">
                 <span data-i18n="btn_portfolio">Портфолио</span>
               </a>
             </div>
           </header>
-
-          <div class="site-extras site-extras--lead-top" id="lead-block-top">
-            <section class="site-extras__block site-extras__block--flush" id="lead-section" aria-labelledby="lead-title">
-              <h2 class="site-extras__title" id="lead-title">Заявка</h2>
-              <p class="site-extras__lead" data-i18n="lead_intro">
-                Кратко опишите задачу — отвечу в удобном для вас формате (почта, Telegram и т.д.).
-              </p>
-              <form class="lead-form" id="lead-form" autocomplete="on">
-                <label>
-                  <span data-i18n="lead_name_label">Имя</span>
-                  <input type="text" name="name" required maxlength="120" />
-                </label>
-                <label>
-                  <span data-i18n="lead_contact_label">Связь (Telegram, email, телефон)</span>
-                  <input type="text" name="contact" required maxlength="200" />
-                </label>
-                <label>
-                  <span data-i18n="lead_message_label">Сообщение</span>
-                  <textarea name="message" maxlength="4000"></textarea>
-                </label>
-                <button type="submit" class="lead-form__submit" data-i18n="lead_submit">Отправить</button>
-                <p class="lead-form__msg" id="lead-form-msg" role="status" aria-live="polite"></p>
-              </form>
-            </section>
-          </div>
 
           <section class="scene scene--quad" aria-label="Услуги">
             <article class="card card--quad stagger-card-1" data-card>
@@ -254,6 +232,43 @@
           <div class="reviews-grid" id="reviews-root"></div>
         </section>
       </div>
+    </div>
+  </div>
+
+  <div
+    id="form-modal"
+    class="lead-modal"
+    style="display: none"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    aria-labelledby="lead-modal-title"
+  >
+    <div class="lead-modal__backdrop" data-close-modal aria-hidden="true"></div>
+    <div class="lead-modal__panel" role="document">
+      <button type="button" class="lead-modal__close" id="btnCloseLeadModal" data-close-modal aria-label="Закрыть">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <h2 class="lead-modal__title" id="lead-modal-title" data-i18n="lead_modal_title">Заявка</h2>
+      <p class="lead-modal__intro" data-i18n="lead_intro">
+        Кратко опишите задачу — отвечу в удобном для вас формате (почта, Telegram и т.д.).
+      </p>
+      <form class="lead-form lead-form--modal" id="lead-form" autocomplete="on">
+        <label>
+          <span data-i18n="lead_name_label">Имя</span>
+          <input type="text" name="name" required maxlength="120" />
+        </label>
+        <label>
+          <span data-i18n="lead_contact_label">Связь (Telegram, email, телефон)</span>
+          <input type="text" name="contact" required maxlength="200" />
+        </label>
+        <label>
+          <span data-i18n="lead_message_label">Сообщение</span>
+          <textarea name="message" maxlength="4000"></textarea>
+        </label>
+        <button type="submit" class="lead-form__submit" data-i18n="lead_submit">Отправить</button>
+        <p class="lead-form__msg" id="lead-form-msg" role="status" aria-live="polite"></p>
+      </form>
     </div>
   </div>
 

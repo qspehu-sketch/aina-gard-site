@@ -64,6 +64,9 @@
       lead_contact_label: "Связь (Telegram, email, телефон)",
       lead_message_label: "Сообщение",
       lead_submit: "Отправить",
+      lead_open_btn: "Оставить заявку",
+      lead_modal_title: "Заявка",
+      modal_close_aria: "Закрыть",
       articles_title: "Статьи",
       reviews_title: "Отзывы",
       admin_link: "Админ"
@@ -125,6 +128,9 @@
       lead_contact_label: "Contact (Telegram, email, phone)",
       lead_message_label: "Message",
       lead_submit: "Send",
+      lead_open_btn: "Leave a request",
+      lead_modal_title: "Request",
+      modal_close_aria: "Close",
       articles_title: "Articles",
       reviews_title: "Reviews",
       admin_link: "Admin"
@@ -314,6 +320,11 @@
     if (btnSound)
       btnSound.setAttribute("aria-label", playing ? t.ariaSoundOff : t.ariaSoundOn);
 
+    var btnCloseLead = document.getElementById("btnCloseLeadModal");
+    if (btnCloseLead && t.modal_close_aria) {
+      btnCloseLead.setAttribute("aria-label", t.modal_close_aria);
+    }
+
     document.dispatchEvent(new CustomEvent("aina-lang-changed"));
   }
 
@@ -387,6 +398,43 @@
   window.__ainaGetLang = function () {
     return lang;
   };
+
+  var leadModal = document.getElementById("form-modal");
+  var btnOpenLead = document.getElementById("btnOpenLeadModal");
+
+  function openLeadModal() {
+    if (!leadModal) return;
+    leadModal.style.display = "grid";
+    leadModal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    var c = document.getElementById("btnCloseLeadModal");
+    if (c) c.focus();
+  }
+
+  function closeLeadModal() {
+    if (!leadModal) return;
+    leadModal.style.display = "none";
+    leadModal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  if (btnOpenLead) {
+    btnOpenLead.addEventListener("click", function () {
+      openLeadModal();
+    });
+  }
+
+  if (leadModal) {
+    leadModal.addEventListener("click", function (e) {
+      if (e.target.closest("[data-close-modal]")) closeLeadModal();
+    });
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape" || !leadModal) return;
+    if (leadModal.getAttribute("aria-hidden") !== "false") return;
+    closeLeadModal();
+  });
 
   initGlobalPointerAmbient();
   initCardWowEffects();
