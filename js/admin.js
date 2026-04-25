@@ -1,13 +1,6 @@
 (function () {
   "use strict";
 
-  var url = window.SUPABASE_URL || "";
-  var key = window.SUPABASE_ANON_KEY || "";
-  var client = null;
-  if (url && key && window.supabase && window.supabase.createClient) {
-    client = window.supabase.createClient(url, key);
-  }
-
   var loginPanel = document.getElementById("login-panel");
   var adminApp = document.getElementById("admin-app");
   var loginForm = document.getElementById("login-form");
@@ -34,11 +27,20 @@
     return String(Date.now()) + "-" + Math.random().toString(36).slice(2, 10);
   }
 
-  if (!client) {
+  if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
     setMsg(loginMsg, "Укажите SUPABASE_URL и SUPABASE_ANON_KEY в файле js/supabase-config.js.", "err");
     if (loginForm) loginForm.style.display = "none";
     return;
   }
+
+  if (!window.supabase || typeof window.supabase.createClient !== "function") {
+    setMsg(loginMsg, "Не загрузилась библиотека Supabase. Проверьте сеть и обновите страницу.", "err");
+    if (loginForm) loginForm.style.display = "none";
+    return;
+  }
+
+  const { createClient } = window.supabase;
+  const db = createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 
   function mountLogout() {
     if (!headActions) return;
@@ -52,7 +54,7 @@
     b.className = "btn-ghost";
     b.textContent = "Выйти";
     b.addEventListener("click", function () {
-      client.auth.signOut();
+      db.auth.signOut();
     });
     headActions.appendChild(a);
     headActions.appendChild(b);
@@ -86,7 +88,7 @@
     var msg = document.getElementById("leads-msg");
     if (!tbody) return;
     setMsg(msg, "Загрузка…");
-    client
+    db
       .from("leads")
       .select("*")
       .order("created_at", { ascending: false })
@@ -131,7 +133,7 @@
         tbody.querySelectorAll(".lead-status").forEach(function (sel) {
           sel.addEventListener("change", function () {
             var id = sel.getAttribute("data-lead-id");
-            client
+            db
               .from("leads")
               .update({ status: sel.value })
               .eq("id", id)
@@ -178,7 +180,7 @@
     var msg = document.getElementById("cards-msg");
     if (!mount) return;
     setMsg(msg, "Загрузка…");
-    client
+    db
       .from("service_cards")
       .select("slot,data")
       .order("slot", { ascending: true })
@@ -216,7 +218,7 @@
             var root = btn.closest(".card-block");
             var data = readCardBlock(root, slot);
             setMsg(msg, "Сохранение…");
-            client
+            db
               .from("service_cards")
               .upsert(
                 { slot: slot, data: data, updated_at: new Date().toISOString() },
@@ -306,7 +308,7 @@
     var msg = document.getElementById("articles-msg");
     if (!list) return;
     setMsg(msg, "Загрузка…");
-    client
+    db
       .from("articles")
       .select("*")
       .order("sort_order", { ascending: true })
@@ -345,7 +347,7 @@
           b.addEventListener("click", function () {
             var id = b.getAttribute("data-del-article");
             if (!confirm("Удалить статью?")) return;
-            client
+            db
               .from("articles")
               .delete()
               .eq("id", id)
@@ -379,7 +381,7 @@
       return;
     }
     setMsg(msg, "Загрузка…");
-    client
+    db
       .from("articles")
       .select("*")
       .eq("id", id)
@@ -459,7 +461,7 @@
           if (urlFinal) payload.image_url = urlFinal;
           var msg = document.getElementById("articles-msg");
           if (id) {
-            client
+            db
               .from("articles")
               .update(payload)
               .eq("id", id)
@@ -473,7 +475,7 @@
                 }
               });
           } else {
-            client
+            db
               .from("articles")
               .insert(payload)
               .then(function (r2) {
@@ -492,7 +494,7 @@
           var ext = (file.name.split(".").pop() || "jpg").toLowerCase();
           if (ext.length > 5) ext = "jpg";
           var path = "articles/" + rndPathSuffix() + "." + ext;
-          client.storage
+          db.storage
             .from("site-uploads")
             .upload(path, file, { upsert: true })
             .then(function (up) {
@@ -500,7 +502,7 @@
                 setMsg(document.getElementById("articles-msg"), up.error.message, "err");
                 return;
               }
-              var pub = client.storage.from("site-uploads").getPublicUrl(path);
+              var pub = db.storage.from("site-uploads").getPublicUrl(path);
               afterUrl(pub.data.publicUrl);
             });
         } else {
@@ -514,7 +516,7 @@
     var msg = document.getElementById("reviews-msg");
     if (!list) return;
     setMsg(msg, "Загрузка…");
-    client
+    db
       .from("reviews")
       .select("*")
       .order("sort_order", { ascending: true })
@@ -550,7 +552,7 @@
           b.addEventListener("click", function () {
             var id = b.getAttribute("data-del-review");
             if (!confirm("Удалить отзыв?")) return;
-            client
+            db
               .from("reviews")
               .delete()
               .eq("id", id)
@@ -581,7 +583,7 @@
       return;
     }
     setMsg(msg, "Загрузка…");
-    client
+    db
       .from("reviews")
       .select("*")
       .eq("id", id)
@@ -642,7 +644,7 @@
         };
         var msg = document.getElementById("reviews-msg");
         if (id) {
-          client
+          db
             .from("reviews")
             .update(payload)
             .eq("id", id)
@@ -656,7 +658,7 @@
               }
             });
         } else {
-          client
+          db
             .from("reviews")
             .insert(payload)
             .then(function (r2) {
@@ -679,7 +681,7 @@
       var email = (fd.get("email") || "").toString().trim();
       var password = (fd.get("password") || "").toString();
       setMsg(loginMsg, "Вход…");
-      client.auth
+      db.auth
         .signInWithPassword({ email: email, password: password })
         .then(function (res) {
           if (res.error) setMsg(loginMsg, res.error.message, "err");
@@ -688,7 +690,7 @@
     });
   }
 
-  client.auth.onAuthStateChange(function (_event, session) {
+  db.auth.onAuthStateChange(function (_event, session) {
     if (session) {
       if (loginPanel) loginPanel.hidden = true;
       if (adminApp) adminApp.hidden = false;
@@ -704,7 +706,7 @@
     }
   });
 
-  client.auth.getSession().then(function (res) {
+  db.auth.getSession().then(function (res) {
     if (res.data && res.data.session) {
       if (loginPanel) loginPanel.hidden = true;
       if (adminApp) adminApp.hidden = false;
