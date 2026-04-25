@@ -80,7 +80,7 @@
 
     var coarse = isCoarsePointer();
     var w = window.innerWidth || 1200;
-    var count = reduce ? 36 : w < 768 ? 50 : w < 1200 ? 68 : 88;
+    var count = reduce ? 28 : w < 768 ? 38 : w < 1200 ? 52 : 64;
     var valueArea = reduce ? 1800 : w < 768 ? 1500 : 1250;
     var linkDist = w < 768 ? 135 : 160;
     var moveSpeed = reduce ? 0.4 : coarse ? 0.8 : 1;

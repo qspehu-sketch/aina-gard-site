@@ -17,8 +17,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css?v=dotgrid1" />
-  <link rel="stylesheet" href="css/dot-grid.css?v=1" />
-  <link rel="stylesheet" href="css/site-extras.css?v=1" />
+  <link rel="stylesheet" href="css/dot-grid.css?v=2" />
+  <link rel="stylesheet" href="css/site-extras.css?v=2" />
 </head>
 <body>
   <div class="page-bg-under" aria-hidden="true">
@@ -50,6 +50,7 @@
         <span id="soundLabel" data-i18n="sound_on">🔊 Включить звук</span>
       </button>
       <button type="button" class="ctrl-btn" id="btnLang" title="Language">RU / EN</button>
+      <a class="ctrl-btn" href="admin.html" data-i18n="admin_link">Админ</a>
     </div>
 
     <main class="hero">
@@ -72,6 +73,31 @@
               </a>
             </div>
           </header>
+
+          <div class="site-extras site-extras--lead-top" id="lead-block-top">
+            <section class="site-extras__block site-extras__block--flush" id="lead-section" aria-labelledby="lead-title">
+              <h2 class="site-extras__title" id="lead-title">Заявка</h2>
+              <p class="site-extras__lead" data-i18n="lead_intro">
+                Кратко опишите задачу — отвечу в удобном для вас формате (почта, Telegram и т.д.).
+              </p>
+              <form class="lead-form" id="lead-form" autocomplete="on">
+                <label>
+                  <span data-i18n="lead_name_label">Имя</span>
+                  <input type="text" name="name" required maxlength="120" />
+                </label>
+                <label>
+                  <span data-i18n="lead_contact_label">Связь (Telegram, email, телефон)</span>
+                  <input type="text" name="contact" required maxlength="200" />
+                </label>
+                <label>
+                  <span data-i18n="lead_message_label">Сообщение</span>
+                  <textarea name="message" maxlength="4000"></textarea>
+                </label>
+                <button type="submit" class="lead-form__submit" data-i18n="lead_submit">Отправить</button>
+                <p class="lead-form__msg" id="lead-form-msg" role="status" aria-live="polite"></p>
+              </form>
+            </section>
+          </div>
 
           <section class="scene scene--quad" aria-label="Услуги">
             <article class="card card--quad stagger-card-1" data-card>
@@ -222,29 +248,6 @@
 
     <div class="site-extras">
       <div class="container">
-        <section class="site-extras__block" id="lead-section" aria-labelledby="lead-title">
-          <h2 class="site-extras__title" id="lead-title">Заявка</h2>
-          <p class="site-extras__lead" data-i18n="lead_intro">
-            Кратко опишите задачу — отвечу в удобном для вас формате (почта, Telegram и т.д.).
-          </p>
-          <form class="lead-form" id="lead-form" autocomplete="on">
-            <label>
-              <span data-i18n="lead_name_label">Имя</span>
-              <input type="text" name="name" required maxlength="120" />
-            </label>
-            <label>
-              <span data-i18n="lead_contact_label">Связь (Telegram, email, телефон)</span>
-              <input type="text" name="contact" required maxlength="200" />
-            </label>
-            <label>
-              <span data-i18n="lead_message_label">Сообщение</span>
-              <textarea name="message" maxlength="4000"></textarea>
-            </label>
-            <button type="submit" class="lead-form__submit" data-i18n="lead_submit">Отправить</button>
-            <p class="lead-form__msg" id="lead-form-msg" role="status" aria-live="polite"></p>
-          </form>
-        </section>
-
         <section class="site-extras__block" id="articles-section" hidden aria-labelledby="articles-title">
           <h2 class="site-extras__title" id="articles-title" data-i18n="articles_title">Статьи</h2>
           <div class="feed-grid" id="articles-root"></div>

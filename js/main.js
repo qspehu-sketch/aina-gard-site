@@ -65,7 +65,8 @@
       lead_message_label: "Сообщение",
       lead_submit: "Отправить",
       articles_title: "Статьи",
-      reviews_title: "Отзывы"
+      reviews_title: "Отзывы",
+      admin_link: "Админ"
     },
     en: {
       doc_title: "Aina Gard — AI Creator",
@@ -125,7 +126,8 @@
       lead_message_label: "Message",
       lead_submit: "Send",
       articles_title: "Articles",
-      reviews_title: "Reviews"
+      reviews_title: "Reviews",
+      admin_link: "Admin"
     }
   };
 

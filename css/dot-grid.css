@@ -27,7 +27,8 @@
   /* Над #particles-js, иначе canvas частиц полностью перекрывает точки */
   z-index: 3;
   pointer-events: none;
-  opacity: 0.45;
+  /* Ниже — меньше «шариков» и нагрузка на GPU */
+  opacity: 0.26;
   mix-blend-mode: screen;
 }
 

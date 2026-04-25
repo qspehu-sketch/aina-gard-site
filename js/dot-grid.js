@@ -9,9 +9,16 @@
   var root = document.getElementById("dot-grid-root");
   if (!root) return;
 
+  try {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      root.style.display = "none";
+      return;
+    }
+  } catch (e0) {}
+
   var opts = {
-    dotSize: 10,
-    gap: 16,
+    dotSize: 9,
+    gap: 22,
     baseColor: "#2a4a6e",
     activeColor: "#6ec8ff",
     proximity: 120,
