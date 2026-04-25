@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=dotgrid1" />
+  <link rel="stylesheet" href="css/styles.css?v=actions1" />
   <link rel="stylesheet" href="css/site-extras.css?v=4" />
 </head>
 <body>
@@ -59,17 +59,36 @@
             </div>
             <p class="sub-title" data-i18n="subtitle">AI-решения для бренда, бизнеса, творчества и жизни</p>
 
-            <div class="actions stagger-actions">
-              <a class="btn btn-game" href="game.html" style="background:linear-gradient(135deg,#7F77DD,#534AB7);color:#fff;border:none;font-weight:600;letter-spacing:.04em;display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:15px;text-decoration:none;transition:opacity .2s;" onmouseover="this.style.opacity=.85" onmouseout="this.style.opacity=1"><span>Узнай сколько теряешь без ИИ →</span></a>
-              <a class="btn btn-primary" data-link="tg" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer">
-                <span data-i18n="btn_diag">Бесплатная консультация</span>
-              </a>
-              <button type="button" class="btn btn-secondary" id="btnOpenLeadModal" data-i18n="lead_open_btn">
-                Оставить заявку
-              </button>
-              <a class="btn btn-secondary" data-link="portfolio" href="https://t.me/+rpmO-uLEpoM3MWZi" target="_blank" rel="noopener noreferrer">
-                <span data-i18n="btn_portfolio">Портфолио</span>
-              </a>
+            <div class="actions actions--stacked stagger-actions">
+              <div class="actions__row actions__row--full">
+                <a class="btn btn-game-wide" href="game.html">
+                  <span data-i18n="btn_game">Узнай сколько теряешь без ИИ →</span>
+                </a>
+              </div>
+              <div class="actions__row actions__row--pair">
+                <a
+                  class="btn btn-cta-outline"
+                  data-link="tg"
+                  href="https://t.me/+rpmO-uLEpoM3MWZi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span data-i18n="btn_diag">Бесплатная консультация</span>
+                </a>
+                <button type="button" class="btn btn-cta-outline" id="btnOpenLeadModal" data-i18n="lead_open_btn">
+                  Оставить заявку
+                </button>
+              </div>
+              <div class="actions__row actions__row--link">
+                <a
+                  class="actions__portfolio-link"
+                  data-link="portfolio"
+                  href="https://t.me/+rpmO-uLEpoM3MWZi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-i18n="btn_portfolio"
+                  >Портфолио</a>
+              </div>
             </div>
           </header>
 
