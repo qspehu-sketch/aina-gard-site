@@ -55,7 +55,7 @@ img { display: block; max-width: 100%; }
 }
 
 /*
- * Слои (снизу вверх): подложка → фото/неон → DotGrid (z2) → particles (z3) → контент (z4).
+ * Слои (снизу вверх): подложка → фото/неон → particles (z2) → DotGrid (z3) → контент (z4).
  * Раньше частицы были z-index:0 под .page-bg-over (2) — сеть рисовалась, но её почти не было видно
  * под затемнённым фото; казалось, что «нити не крепятся».
  */
@@ -75,7 +75,7 @@ img { display: block; max-width: 100%; }
   isolation: isolate;
 }
 
-/* Градиент + canvas: над DotGrid и фото, под .page; отдельный композитный слой — меньше рывков при скролле */
+/* Градиент + canvas: над фото, под DotGrid и .page; отдельный композитный слой — меньше рывков при скролле */
 #particles-js {
   position: fixed;
   top: 0;
@@ -84,7 +84,7 @@ img { display: block; max-width: 100%; }
   height: 100%;
   min-height: 100vh;
   min-height: 100dvh;
-  z-index: 3;
+  z-index: 2;
   pointer-events: none;
   transform: translateZ(0);
   backface-visibility: hidden;

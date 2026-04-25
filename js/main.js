@@ -57,7 +57,15 @@
       c4_f3: "Личные проекты",
       c4_f4: "Умные помощники",
       meta_description:
-        "Айна Гард — AI Creator, промт-инженер и вайб-кодер. AI-решения для бренда, бизнеса и творчества. Бесплатная консультация в Telegram."
+        "Айна Гард — AI Creator, промт-инженер и вайб-кодер. AI-решения для бренда, бизнеса и творчества. Бесплатная консультация в Telegram.",
+      lead_intro:
+        "Кратко опишите задачу — отвечу в удобном для вас формате (почта, Telegram и т.д.).",
+      lead_name_label: "Имя",
+      lead_contact_label: "Связь (Telegram, email, телефон)",
+      lead_message_label: "Сообщение",
+      lead_submit: "Отправить",
+      articles_title: "Статьи",
+      reviews_title: "Отзывы"
     },
     en: {
       doc_title: "Aina Gard — AI Creator",
@@ -109,7 +117,15 @@
       c4_f3: "Personal projects",
       c4_f4: "Smart assistants",
       meta_description:
-        "Aina Gard — AI creator, prompt engineer, and vibe coder. AI solutions for brand, business, and creativity. Free consultation on Telegram."
+        "Aina Gard — AI creator, prompt engineer, and vibe coder. AI solutions for brand, business, and creativity. Free consultation on Telegram.",
+      lead_intro:
+        "Briefly describe your request — I’ll reply via your preferred channel (email, Telegram, etc.).",
+      lead_name_label: "Name",
+      lead_contact_label: "Contact (Telegram, email, phone)",
+      lead_message_label: "Message",
+      lead_submit: "Send",
+      articles_title: "Articles",
+      reviews_title: "Reviews"
     }
   };
 
@@ -241,12 +257,34 @@
     });
   }
 
+  function applyServiceCardPatch(t) {
+    var rows = window.__AINA_SERVICE_ROWS__;
+    if (!rows) return;
+    for (var s = 1; s <= 4; s++) {
+      var row = rows[s];
+      if (!row) continue;
+      var p = row[lang];
+      if (!p) continue;
+      var prefix = "c" + s;
+      if (p.title) t[prefix + "_title"] = p.title;
+      if (p.back_title) t[prefix + "_back_title"] = p.back_title;
+      if (p.price) t[prefix + "_price"] = p.price;
+      if (p.tags && p.tags.length) {
+        for (var i = 0; i < 4; i++) {
+          if (p.tags[i]) t[prefix + "_f" + (i + 1)] = p.tags[i];
+        }
+      }
+    }
+  }
+
   function setLang(next) {
     lang = next;
     localStorage.setItem("aina_lang", lang);
     document.documentElement.lang = lang === "en" ? "en" : "ru";
     var t = I18N[lang];
     if (!t) return;
+
+    applyServiceCardPatch(t);
 
     document.querySelectorAll("[data-i18n]").forEach(function (el) {
       var key = el.getAttribute("data-i18n");
@@ -273,6 +311,8 @@
     if (soundLabel) soundLabel.textContent = playing ? t.sound_off : t.sound_on;
     if (btnSound)
       btnSound.setAttribute("aria-label", playing ? t.ariaSoundOff : t.ariaSoundOn);
+
+    document.dispatchEvent(new CustomEvent("aina-lang-changed"));
   }
 
   function toggleSound() {
@@ -338,6 +378,13 @@
       portraitCard.classList.toggle("is-flipped");
     });
   }
+
+  window.__ainaRefreshI18n = function () {
+    setLang(lang);
+  };
+  window.__ainaGetLang = function () {
+    return lang;
+  };
 
   initGlobalPointerAmbient();
   initCardWowEffects();

@@ -53,7 +53,8 @@
     speed: 0,
     lastTime: 0,
     lastX: 0,
-    lastY: 0
+    lastY: 0,
+    _inertiaInit: false
   };
 
   function throttle(fn, ms) {
@@ -220,7 +221,20 @@
     if (running) rafId = requestAnimationFrame(drawFrame);
   }
 
-  function onMove(e) {
+  /* Координаты для подсветки рядом с курсором — каждый кадр; инерция точек — реже */
+  function onPointerCoords(e) {
+    var rect = canvas.getBoundingClientRect();
+    pointer.x = e.clientX - rect.left;
+    pointer.y = e.clientY - rect.top;
+    if (!pointer._inertiaInit) {
+      pointer._inertiaInit = true;
+      pointer.lastX = e.clientX;
+      pointer.lastY = e.clientY;
+      pointer.lastTime = performance.now();
+    }
+  }
+
+  function onMoveInertia(e) {
     var now = performance.now();
     var pr = pointer;
     var dt = pr.lastTime ? now - pr.lastTime : 16;
@@ -241,10 +255,6 @@
     pr.vx = vx;
     pr.vy = vy;
     pr.speed = speed;
-
-    var rect = canvas.getBoundingClientRect();
-    pr.x = e.clientX - rect.left;
-    pr.y = e.clientY - rect.top;
 
     if (speed <= opts.speedTrigger) return;
 
@@ -293,7 +303,8 @@
     else window.addEventListener("resize", buildGrid, { passive: true });
 
     if (!reduce) {
-      window.addEventListener("mousemove", throttle(onMove, 48), { passive: true });
+      window.addEventListener("mousemove", onPointerCoords, { passive: true });
+      window.addEventListener("mousemove", throttle(onMoveInertia, 48), { passive: true });
       window.addEventListener("click", onClick);
     }
   }

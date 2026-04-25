@@ -63,14 +63,14 @@
 
     var colors = isDark
       ? {
-          particles: "#00f5ff",
-          lines: "#00d9ff",
-          accent: "#0096c7"
+          particles: "#6ec8ff",
+          lines: "#f0a8d8",
+          accent: "#4a9fd8"
         }
       : {
-          particles: "#0277bd",
-          lines: "#0288d1",
-          accent: "#039be5"
+          particles: "#4a7ba7",
+          lines: "#c97db8",
+          accent: "#2d5a7b"
         };
 
     var reduce = false;
@@ -80,12 +80,11 @@
 
     var coarse = isCoarsePointer();
     var w = window.innerWidth || 1200;
-    var count = reduce ? 36 : w < 768 ? 48 : w < 1200 ? 62 : 78;
+    var count = reduce ? 36 : w < 768 ? 50 : w < 1200 ? 68 : 88;
     var valueArea = reduce ? 1800 : w < 768 ? 1500 : 1250;
-    var linkDist = w < 768 ? 125 : 148;
-    var moveSpeed = reduce ? 0.4 : coarse ? 0.85 : 1;
+    var linkDist = w < 768 ? 135 : 160;
+    var moveSpeed = reduce ? 0.4 : coarse ? 0.8 : 1;
     var useRetina = w >= 960 && !reduce && !coarse;
-    var grabOn = !reduce && !coarse;
 
     window.particlesJS("particles-js", {
       particles: {
@@ -93,52 +92,49 @@
         color: { value: colors.particles },
         shape: {
           type: "circle",
-          stroke: { width: 0.45, color: colors.accent }
+          stroke: { width: 0.5, color: colors.accent }
         },
         opacity: {
-          value: 0.68,
+          value: 0.7,
           random: true,
           anim: {
-            enable: !reduce,
-            speed: 0.85,
-            opacity_min: 0.28
+            enable: true,
+            speed: 1,
+            opacity_min: 0.3
           }
         },
         size: {
-          value: 2.6,
+          value: 3,
           random: true,
           anim: {
-            enable: !reduce,
-            speed: 1.6,
-            size_min: 0.9
+            enable: true,
+            speed: 2,
+            size_min: 1
           }
         },
         line_linked: {
           enable: true,
           distance: linkDist,
           color: colors.lines,
-          opacity: 0.38,
-          width: 1
+          opacity: 0.4,
+          width: 1.2
         },
         move: {
-          enable: !reduce,
+          enable: true,
           speed: moveSpeed,
-          direction: "none",
           random: true,
-          straight: false,
-          out_mode: "bounce",
-          bounce: false
+          out_mode: "bounce"
         }
       },
       interactivity: {
-        detect_on: "window",
+        detect_on: "canvas",
         events: {
-          onhover: { enable: grabOn, mode: "grab" },
-          onclick: { enable: false },
+          onhover: { enable: true, mode: "grab" },
+          onclick: { enable: true, mode: "push" },
           resize: true
         },
         modes: {
-          grab: { distance: coarse ? 140 : 200, line_linked: { opacity: 0.72 } },
+          grab: { distance: 220, line_linked: { opacity: 0.8 } },
           push: { particles_nb: 4 },
           repulse: { distance: 180, duration: 0.4 }
         }

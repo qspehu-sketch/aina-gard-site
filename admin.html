@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Админ — ainai.pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Unbounded:wght@600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css?v=1" />
+</head>
+<body>
+  <div class="admin-wrap">
+    <header class="admin-head">
+      <h1 class="admin-logo">ainai.pro — админ</h1>
+      <div class="admin-head-actions" id="head-actions"></div>
+    </header>
+
+    <section class="admin-card" id="login-panel">
+      <h2>Вход</h2>
+      <p class="admin-hint">Тот же email и пароль, что вы задали в Supabase → Authentication → Users.</p>
+      <form id="login-form" class="admin-form">
+        <label>Email<input type="email" name="email" required autocomplete="username" /></label>
+        <label>Пароль<input type="password" name="password" required autocomplete="current-password" /></label>
+        <button type="submit" class="btn-primary">Войти</button>
+      </form>
+      <p class="admin-msg" id="login-msg"></p>
+    </section>
+
+    <div id="admin-app" hidden>
+      <nav class="admin-tabs" id="admin-tabs" aria-label="Разделы">
+        <button type="button" class="admin-tab is-active" data-tab="leads">Заявки</button>
+        <button type="button" class="admin-tab" data-tab="cards">4 карточки</button>
+        <button type="button" class="admin-tab" data-tab="articles">Статьи</button>
+        <button type="button" class="admin-tab" data-tab="reviews">Отзывы</button>
+      </nav>
+
+      <section class="admin-panel is-active" data-panel="leads">
+        <h2>Заявки</h2>
+        <p class="admin-hint">Статусы: новая → в работе → выполнена → в архиве.</p>
+        <div class="admin-table-wrap">
+          <table class="admin-table" id="leads-table">
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>Имя</th>
+                <th>Связь</th>
+                <th>Сообщение</th>
+                <th>Статус</th>
+              </tr>
+            </thead>
+            <tbody id="leads-body"></tbody>
+          </table>
+        </div>
+        <p class="admin-msg" id="leads-msg"></p>
+      </section>
+
+      <section class="admin-panel" data-panel="cards">
+        <h2>Карточки услуг (фиксированные 1–4)</h2>
+        <p class="admin-hint">После сохранения обновите главную страницу сайта (кэш может задержать текст на пару секунд).</p>
+        <div id="cards-mount"></div>
+        <p class="admin-msg" id="cards-msg"></p>
+      </section>
+
+      <section class="admin-panel" data-panel="articles">
+        <h2>Статьи</h2>
+        <button type="button" class="btn-secondary" id="btn-new-article">+ Новая статья</button>
+        <div id="article-editor" class="admin-editor" hidden></div>
+        <div class="admin-list" id="articles-list"></div>
+        <p class="admin-msg" id="articles-msg"></p>
+      </section>
+
+      <section class="admin-panel" data-panel="reviews">
+        <h2>Отзывы</h2>
+        <button type="button" class="btn-secondary" id="btn-new-review">+ Новый отзыв</button>
+        <div id="review-editor" class="admin-editor" hidden></div>
+        <div class="admin-list" id="reviews-list"></div>
+        <p class="admin-msg" id="reviews-msg"></p>
+      </section>
+    </div>
+  </div>
+
+  <script src="js/supabase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/admin.js?v=1"></script>
+</body>
+</html>

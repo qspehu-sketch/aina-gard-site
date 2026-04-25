@@ -18,6 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css?v=dotgrid1" />
   <link rel="stylesheet" href="css/dot-grid.css?v=1" />
+  <link rel="stylesheet" href="css/site-extras.css?v=1" />
 </head>
 <body>
   <div class="page-bg-under" aria-hidden="true">
@@ -217,12 +218,52 @@
         </div>
       </div>
     </main>
+
+    <div class="site-extras">
+      <div class="container">
+        <section class="site-extras__block" id="lead-section" aria-labelledby="lead-title">
+          <h2 class="site-extras__title" id="lead-title">Заявка</h2>
+          <p class="site-extras__lead" data-i18n="lead_intro">
+            Кратко опишите задачу — отвечу в удобном для вас формате (почта, Telegram и т.д.).
+          </p>
+          <form class="lead-form" id="lead-form" autocomplete="on">
+            <label>
+              <span data-i18n="lead_name_label">Имя</span>
+              <input type="text" name="name" required maxlength="120" />
+            </label>
+            <label>
+              <span data-i18n="lead_contact_label">Связь (Telegram, email, телефон)</span>
+              <input type="text" name="contact" required maxlength="200" />
+            </label>
+            <label>
+              <span data-i18n="lead_message_label">Сообщение</span>
+              <textarea name="message" maxlength="4000"></textarea>
+            </label>
+            <button type="submit" class="lead-form__submit" data-i18n="lead_submit">Отправить</button>
+            <p class="lead-form__msg" id="lead-form-msg" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <section class="site-extras__block" id="articles-section" hidden aria-labelledby="articles-title">
+          <h2 class="site-extras__title" id="articles-title" data-i18n="articles_title">Статьи</h2>
+          <div class="feed-grid" id="articles-root"></div>
+        </section>
+
+        <section class="site-extras__block" id="reviews-section" hidden aria-labelledby="reviews-title">
+          <h2 class="site-extras__title" id="reviews-title" data-i18n="reviews_title">Отзывы</h2>
+          <div class="reviews-grid" id="reviews-root"></div>
+        </section>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
   <script src="js/dot-grid.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js" defer></script>
   <script src="js/particles-init.js" defer></script>
+  <script src="js/supabase-config.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="js/main.js" defer></script>
+  <script src="js/supabase-public.js" defer></script>
 </body>
 </html>
