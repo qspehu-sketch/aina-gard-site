@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>День с ИИ или без? — игра Айны</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f5f5f5;display:flex;justify-content:center;padding:20px;font-family:system-ui,sans-serif}
+.gw{width:100%;max-width:640px}
+.screen{width:100%}
+.intro-screen{background:#fff;border:0.5px solid #ddd;border-radius:14px;padding:1.5rem;text-align:center}
+.intro-title{font-size:22px;font-weight:500;color:#222;margin-bottom:8px}
+.intro-sub{font-size:15px;color:#666;margin-bottom:1.5rem;line-height:1.7}
+.hour-block{background:#f5f5f5;border-radius:14px;padding:1.25rem;margin-bottom:1.25rem;text-align:left}
+.hour-q{font-size:16px;font-weight:500;color:#222;margin-bottom:4px}
+.hour-hint-top{font-size:13px;color:#666;margin-bottom:14px;line-height:1.5}
+.hour-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.hour-input{flex:1;font-size:22px;font-weight:500;padding:12px 14px;border-radius:12px;border:0.5px solid #ccc;background:#fff;color:#222;text-align:center}
+.hour-unit{font-size:15px;color:#666;white-space:nowrap;font-weight:500}
+.month-calc{font-size:14px;color:#999;text-align:center;padding:8px;background:#fff;border-radius:10px;margin-bottom:12px}
+.month-calc span{font-weight:500;color:#222}
+.presets{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.preset{padding:8px 14px;border-radius:10px;font-size:14px;cursor:pointer;border:0.5px solid #ccc;background:#fff;color:#666;font-weight:500}
+.preset:hover{background:#f0f0f0;color:#222}
+.preset.active{background:#EEEDFE;border-color:#7F77DD;color:#3C3489}
+.go-btn{display:block;width:100%;padding:15px;border-radius:14px;font-size:17px;font-weight:500;cursor:pointer;border:none;background:#534AB7;color:#fff;margin-top:4px}
+.go-btn:hover{background:#3C3489}
+.game-screen{display:none;width:100%}
+.sky-wrap{width:100%;height:130px;border-radius:14px 14px 0 0;overflow:hidden;position:relative}
+#sky-cv{display:block;width:100%;height:130px}
+.time-badge{position:absolute;right:10px;bottom:8px;font-size:11px;font-weight:500;color:rgba(255,255,255,0.9);background:rgba(0,0,0,0.3);padding:2px 10px;border-radius:6px}
+.road-wrap{background:#1a2a0a;border-radius:0 0 14px 14px;border:0.5px solid #ccc;border-top:none;padding:10px 12px 12px}
+.hud{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0}
+.hp{background:#f0f0f0;border-radius:10px;padding:7px 8px}
+.hp-l{font-size:10px;color:#888;margin-bottom:2px}
+.hp-v{font-size:14px;font-weight:500;color:#222;margin-bottom:3px}
+.hp-b{height:4px;border-radius:2px;background:#ddd;overflow:hidden}
+.hp-f{height:100%;border-radius:2px;transition:width .5s,background .5s}
+.scene{background:#fff;border:0.5px solid #ddd;border-radius:14px;padding:1.25rem;margin-top:6px}
+.sc-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.sc-icon{width:52px;height:52px;border-radius:14px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;border:0.5px solid #eee}
+.sc-step{font-size:12px;color:#7F77DD;font-weight:500;margin-bottom:3px}
+.sc-title{font-size:16px;font-weight:500;color:#222;line-height:1.4}
+.mbar{display:flex;align-items:center;gap:12px;border-radius:12px;padding:10px 14px;margin-bottom:14px;border:0.5px solid}
+.mface{font-size:32px;animation:ms .5s infinite alternate;flex-shrink:0}
+@keyframes ms{0%{transform:translateX(-3px) rotate(-5deg)}100%{transform:translateX(3px) rotate(5deg)}}
+.mn{font-size:14px;font-weight:500;margin-bottom:2px}
+.md{font-size:12px;opacity:.8;margin-bottom:6px}
+.mtags{display:flex;gap:6px;flex-wrap:wrap}
+.mtag{font-size:12px;padding:3px 10px;border-radius:6px;font-weight:500}
+.choices{display:flex;gap:10px;flex-wrap:wrap}
+.cbtn{flex:1;min-width:150px;padding:13px 16px;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;border:0.5px solid #ccc;background:#f5f5f5;color:#222;line-height:1.4;text-align:center}
+.cbtn:hover:not(:disabled){background:#e8e8e8}
+.cbtn.ai{border-color:#1D9E75;color:#085041;background:#E1F5EE}
+.cbtn.ai:hover:not(:disabled){background:#9FE1CB}
+.cbtn:disabled{opacity:.4;cursor:default}
+.result{font-size:15px;padding:14px 16px;border-radius:12px;margin-top:12px;line-height:1.7;display:none;border:0.5px solid}
+.result.bad{background:#FCEBEB;color:#7A1F1F;border-color:rgba(226,75,74,0.3)}
+.result.good{background:#E1F5EE;color:#085041;border-color:rgba(29,158,117,0.3)}
+.next-btn{display:none;width:100%;padding:12px;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;border:0.5px solid #ccc;background:#f5f5f5;color:#222;margin-top:10px;text-align:center}
+.next-btn:hover{background:#e8e8e8}
+.final{display:none;background:#fff;border:0.5px solid #ddd;border-radius:14px;padding:1.5rem;margin-top:10px}
+.f-title{font-size:20px;font-weight:500;color:#222;margin-bottom:4px}
+.f-sub{font-size:14px;color:#666;margin-bottom:1.25rem;line-height:1.6}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:1.25rem}
+.scard{background:#f5f5f5;border-radius:12px;padding:12px}
+.scard-l{font-size:12px;color:#666;margin-bottom:2px}
+.scard-v{font-size:22px;font-weight:500}
+.scard-v.red{color:#c0392b}
+.scard-v.grn{color:#1D9E75}
+.scard-n{font-size:12px;color:#999;margin-top:2px}
+.mrow{display:flex;gap:10px;align-items:flex-start;background:#f5f5f5;border-radius:12px;padding:1rem;margin-bottom:1.25rem}
+.mava{width:38px;height:38px;border-radius:50%;background:#534AB7;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;color:#fff}
+.mname{font-size:11px;font-weight:500;color:#7F77DD;margin-bottom:3px}
+.mtext{font-size:14px;color:#222;line-height:1.6}
+.cta-wrap{background:#EEEDFE;border:2px solid #7F77DD;border-radius:14px;padding:1.25rem;margin-bottom:10px}
+.cta-title{font-size:17px;font-weight:500;color:#26215C;text-align:center;margin-bottom:6px}
+.cta-sub{font-size:13px;color:#534AB7;text-align:center;margin-bottom:12px}
+.cta-btns{display:flex;gap:8px;flex-wrap:wrap}
+.ctabtn{flex:1;min-width:110px;padding:14px 10px;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;text-align:center;border:none;color:#fff}
+.ctabtn.tg{background:#2AABEE}.ctabtn.tg:hover{background:#1a9bde}
+.ctabtn.wa{background:#25D366}.ctabtn.wa:hover{background:#15c356}
+.ctabtn.mx{background:#7F77DD}.ctabtn.mx:hover{background:#534AB7}
+.rbtn{display:block;width:100%;padding:12px;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;text-align:center;border:0.5px solid #ccc;background:#f5f5f5;color:#222;margin-top:8px}
+.rbtn:hover{background:#e8e8e8}
+</style>
+</head>
+<body style="background:#030208">
+<div style="max-width:640px;margin:0 auto;padding:12px 0 0"><a href="index.html" style="font-family:system-ui,sans-serif;font-size:13px;color:rgba(255,255,255,0.5);text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-bottom:8px;padding:0 4px">← На главную</a></div>
+<div class="gw">
+
+<!-- ЭКРАН 1: ВЫБОР СТОИМОСТИ ЧАСА -->
+<div class="screen intro-screen" id="intro-screen">
+  <div class="intro-title">День с ИИ или без?</div>
+  <div class="intro-sub">8 задач. За каждой — монстр-пожиратель.<br>Пройди день и узнай сколько теряешь без нейросетей — в <b>твоих</b> деньгах.</div>
+  <div class="hour-block">
+    <div class="hour-q">Сколько стоит твой рабочий час?</div>
+    <div class="hour-hint-top">Введи сумму или выбери из готовых вариантов. Все потери и экономия будут считаться именно от твоей цифры.</div>
+    <div class="hour-row">
+      <input class="hour-input" type="number" id="hour-val" value="500" min="50" max="50000" step="50">
+      <span class="hour-unit">₽ / час</span>
+    </div>
+    <div class="month-calc">При 8-часовом дне это ≈ <span id="month-num">88 000</span> ₽ в месяц</div>
+    <div class="presets">
+      <button class="preset" onclick="setRate(200)">200 ₽</button>
+      <button class="preset active" onclick="setRate(500)">500 ₽</button>
+      <button class="preset" onclick="setRate(1000)">1 000 ₽</button>
+      <button class="preset" onclick="setRate(2000)">2 000 ₽</button>
+      <button class="preset" onclick="setRate(5000)">5 000 ₽</button>
+    </div>
+  </div>
+  <button class="go-btn" onclick="startGame()">▶ Начать приключение</button>
+</div>
+
+<!-- ЭКРАН 2: ИГРА -->
+<div class="screen game-screen" id="game-screen">
+  <div style="border-radius:14px;border:0.5px solid #ccc;overflow:hidden">
+    <div class="sky-wrap">
+      <canvas id="sky-cv" width="640" height="130"></canvas>
+      <div class="time-badge" id="time-badge">Утро · 7:00</div>
+    </div>
+    <div class="road-wrap">
+      <svg id="road-svg" viewBox="0 0 600 68" style="width:100%;display:block">
+        <path id="rp1" fill="none" stroke="rgba(60,50,20,0.5)" stroke-width="10" stroke-linecap="round"/>
+        <path id="rp2" fill="none" stroke="rgba(180,160,80,0.2)" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 14"/>
+        <g id="nodes-g"></g>
+        <g id="hero-g"></g>
+      </svg>
+    </div>
+  </div>
+  <div class="hud">
+    <div class="hp"><div class="hp-l">Энергия</div><div class="hp-v" id="h-en">100%</div><div class="hp-b"><div class="hp-f" id="hf-en" style="width:100%;background:#5DCAA5"></div></div></div>
+    <div class="hp"><div class="hp-l">Время</div><div class="hp-v" id="h-tm">8.0ч</div><div class="hp-b"><div class="hp-f" id="hf-tm" style="width:100%;background:#378ADD"></div></div></div>
+    <div class="hp"><div class="hp-l">Потери ₽</div><div class="hp-v" id="h-mo" style="color:#c0392b">0</div><div class="hp-b"><div class="hp-f" id="hf-mo" style="width:0%;background:#E24B4A"></div></div></div>
+    <div class="hp"><div class="hp-l">Экономия ₽</div><div class="hp-v" id="h-sv" style="color:#1D9E75">0</div><div class="hp-b"><div class="hp-f" id="hf-sv" style="width:0%;background:#5DCAA5"></div></div></div>
+    <div class="hp"><div class="hp-l">Стресс</div><div class="hp-v" id="h-st">0%</div><div class="hp-b"><div class="hp-f" id="hf-st" style="width:0%;background:#7F77DD"></div></div></div>
+  </div>
+  <div id="level-area"></div>
+  <div class="final" id="final-box"></div>
+</div>
+
+</div>
+<script>
+const LVL=[
+  {
+    icon:"✏️",label:"Пост",task:"Написать продающий пост или email-рассылку",who:"Эксперты, фрилансеры, ИП",
+    mt:"time",mn:"Пожиратель времени",mf:"👾",md:"Охотится на тех, кто пишет с нуля вручную",
+    tc:1.5,mult:1.5,st:18,en:20,
+    bad:"Долго смотришь в пустой экран. Мысли не идут, время уходит. Монстр доволен.",
+    good:"Нейросети написали черновик за пару минут, ты доработал под себя. Монстр убежал!"
+  },
+  {
+    icon:"🤝",label:"Клиенты",task:"Общение с клиентами: ответы, возражения, переписка",who:"Все виды бизнеса и фриланса",
+    mt:"energy",mn:"Пожиратель сил",mf:"😈",md:"Высасывает энергию через повторяющиеся вопросы",
+    tc:2,mult:2,st:28,en:30,
+    bad:"Отвечаешь на одни и те же вопросы по несколько раз в день. Силы уходят, а очередь не кончается.",
+    good:"Нейросети помогли написать готовые ответы на частые вопросы. Ты тратишь время только на то, что действительно важно!"
+  },
+  {
+    icon:"📨",label:"Почта",task:"Разобрать входящие письма и ответить на запросы",who:"Фрилансеры, ИП, менеджеры",
+    mt:"energy",mn:"Пожиратель энергии",mf:"🦠",md:"Размножается с каждым непрочитанным письмом",
+    tc:1.5,mult:1.5,st:22,en:25,
+    bad:"Долго переписываешься, обрабатываешь письма. Мозг устаёт, а новые письма всё приходят.",
+    good:"Нейросети написали черновики ответов за минуты. Ты проверил и отправил — быстро и без усилий!"
+  },
+  {
+    icon:"📐",label:"Презентация",task:"Сделать презентацию для клиента или инвестора",who:"Предприниматели, эксперты, продажи",
+    mt:"time",mn:"Великий пожиратель",mf:"👹",md:"Гигант — крадёт полдня за один слайд",
+    tc:3,mult:3,st:30,en:35,
+    bad:"Несколько часов в PowerPoint. Переставляешь блоки, не можешь собрать мысли. Полдня нет.",
+    good:"Нейросети сделали структуру и оформление за считанные минуты. Тебя спросили — кто делал?"
+  },
+  {
+    icon:"🎬",label:"Контент",task:"Придумать и запланировать контент на неделю",who:"Блогеры, маркетологи, SMM",
+    mt:"stress",mn:"Пожиратель идей",mf:"🧟",md:"Убивает вдохновение и вгоняет в творческий ступор",
+    tc:2,mult:2,st:35,en:28,
+    bad:"Сидишь над пустым планером. Идей мало, все кажутся неинтересными. Выгорание подкрадывается.",
+    good:"Нейросети выдали десятки идей за минуты. Ты выбрал лучшие — контент-план на неделю готов!"
+  },
+  {
+    icon:"📋",label:"Договор",task:"Составить договор или коммерческое предложение",who:"ИП, фрилансеры, предприниматели",
+    mt:"money",mn:"Пожиратель прибыли",mf:"💀",md:"Прячется в шаблонах и съедает часы на правки",
+    tc:2.5,mult:2.5,st:25,en:22,
+    bad:"Искал шаблон договора или писал сам — мысли не складываются, формулировки не те. Время ушло.",
+    good:"Нейросети написали структуру за минуты. Ты добавил детали — профессионально и уверенно!"
+  },
+  {
+    icon:"📣",label:"Реклама",task:"Написать рекламные тексты и объявления",who:"Маркетологи, ИП, малый бизнес",
+    mt:"time",mn:"Пожиратель бюджета",mf:"🤡",md:"Сжигает деньги на неэффективные тексты",
+    tc:2,mult:2,st:25,en:25,
+    bad:"Долго писал объявления. Запустил — конверсия низкая. Деньги на рекламу потрачены зря.",
+    good:"Нейросети написали несколько вариантов текстов за минуты. Тестируй лучшие — результат растёт!"
+  },
+  {
+    icon:"📊",label:"Отчёт",task:"Подготовить финансовый или аналитический отчёт",who:"Бухгалтеры, аналитики, ИП, бизнес",
+    mt:"time",mn:"Пожиратель дня",mf:"🐲",md:"Самый страшный — прячется в таблицах и формулах",
+    tc:3,mult:3,st:40,en:35,
+    bad:"Несколько часов в таблицах. Цифры плывут, ошибки находишь поздно вечером. Весь день убит.",
+    good:"Нейросети проанализировали данные за несколько минут. Ты проверил выводы — и всё готово!"
+  },
+];
+
+const SKIES=[
+  {label:"Утро · 7:00",top:"#5BA3D9",mid:"#87CEEB",bot:"#C5E8FF",sun:0.05,stars:false},
+  {label:"Утро · 9:00",top:"#4A9EE8",mid:"#70BFEF",bot:"#B8DFF8",sun:0.2,stars:false},
+  {label:"День · 11:00",top:"#1E7AC4",mid:"#4A9EE8",bot:"#87CEEB",sun:0.38,stars:false},
+  {label:"День · 13:00",top:"#1565B0",mid:"#2980D4",bot:"#65B8EE",sun:0.5,stars:false},
+  {label:"День · 15:00",top:"#1E7AC4",mid:"#4A9EE8",bot:"#87CEEB",sun:0.62,stars:false},
+  {label:"Вечер · 17:00",top:"#C45A10",mid:"#F0A040",bot:"#F8CC70",sun:0.78,stars:false},
+  {label:"Закат · 19:00",top:"#8B2A05",mid:"#D85A20",bot:"#F5A030",sun:0.94,stars:false},
+  {label:"Сумерки · 21:00",top:"#2C1654",mid:"#5A3080",bot:"#8B5AAF",sun:1,stars:true},
+  {label:"Ночь · 22:00",top:"#050318",mid:"#0f0830",bot:"#1a1050",sun:1,stars:true},
+];
+
+function drawSky(step){
+  const cv=document.getElementById('sky-cv');if(!cv)return;
+  const cx=cv.getContext('2d'),sw=640,sh=130;
+  const s=SKIES[Math.min(step,SKIES.length-1)];
+  const g=cx.createLinearGradient(0,0,0,sh);
+  g.addColorStop(0,s.top);g.addColorStop(0.55,s.mid);g.addColorStop(1,s.bot);
+  cx.fillStyle=g;cx.fillRect(0,0,sw,sh);
+  if(s.stars){
+    for(let i=0;i<70;i++){
+      const sx=(i*137.5)%sw,sy=(i*91.3)%(sh*0.75),r=Math.max(0.4,((i*17)%3)*0.55);
+      cx.fillStyle='rgba(255,255,255,'+(0.35+((i*31)%5)*0.1)+')';
+      cx.beginPath();cx.arc(sx,sy,r,0,Math.PI*2);cx.fill();
+    }
+    cx.fillStyle='rgba(240,240,255,0.9)';cx.beginPath();cx.arc(sw*0.78,sh*0.22,11,0,Math.PI*2);cx.fill();
+    cx.fillStyle=s.top;cx.beginPath();cx.arc(sw*0.78+9,sh*0.22-3,9,0,Math.PI*2);cx.fill();
+  } else {
+    const sunX=sw*0.05+s.sun*sw*0.9;
+    const sunY=sh*(0.7-Math.sin(s.sun*Math.PI)*0.58);
+    const sg=cx.createRadialGradient(sunX,sunY,0,sunX,sunY,34);
+    sg.addColorStop(0,'rgba(255,240,80,0.9)');sg.addColorStop(1,'rgba(255,200,50,0)');
+    cx.fillStyle=sg;cx.beginPath();cx.arc(sunX,sunY,34,0,Math.PI*2);cx.fill();
+    cx.fillStyle='rgba(255,230,50,1)';cx.beginPath();cx.arc(sunX,sunY,13,0,Math.PI*2);cx.fill();
+  }
+  cx.fillStyle='rgba(255,255,255,0.06)';
+  [[70,20,110,17],[230,12,150,13],[400,26,95,15],[515,16,118,14]].forEach(function(a){
+    cx.beginPath();cx.ellipse(a[0],a[1],a[2],a[3],0,0,Math.PI*2);cx.fill();
+  });
+  var tb=document.getElementById('time-badge');if(tb)tb.textContent=s.label;
+}
+
+var NN=LVL.length+1;
+var nodes=[];
+for(var i=0;i<NN;i++){
+  var t=i/(NN-1);
+  nodes.push({x:20+t*560,y:34+Math.sin(t*Math.PI*2)*16});
+}
+function buildP(){
+  var d='M'+nodes[0].x+','+nodes[0].y;
+  for(var i=1;i<nodes.length;i++){
+    var p=nodes[i-1],c=nodes[i],mx=(p.x+c.x)/2;
+    d+=' C'+mx+','+p.y+' '+mx+','+c.y+' '+c.x+','+c.y;
+  }
+  return d;
+}
+
+var G={step:0,en:100,tm:8,mo:0,sv:0,st:0,bad:0,rate:500};
+var heroPos={x:nodes[0].x,y:nodes[0].y};
+var heroWalking=false,heroAnim=0;
+
+function fmt(n){return Math.round(n).toLocaleString('ru-RU');}
+
+function setRate(v){
+  document.getElementById('hour-val').value=v;
+  document.getElementById('month-num').textContent=fmt(v*8*22);
+  document.querySelectorAll('.preset').forEach(function(b){
+    b.classList.toggle('active',parseInt(b.textContent.replace(/\D/g,''))===v);
+  });
+}
+
+document.getElementById('hour-val').addEventListener('input',function(){
+  var v=Math.max(50,parseInt(this.value)||500);
+  document.getElementById('month-num').textContent=fmt(v*8*22);
+  document.querySelectorAll('.preset').forEach(function(b){b.classList.remove('active');});
+});
+
+function renderNodes(active){
+  var g=document.getElementById('nodes-g');if(!g)return;g.innerHTML='';
+  nodes.forEach(function(n,i){
+    var done=i<active,act=i===active,end=i===NN-1,r=end?10:7;
+    if(done||act){
+      var gl=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      gl.setAttribute('cx',n.x);gl.setAttribute('cy',n.y);gl.setAttribute('r',r+9);
+      gl.setAttribute('fill',done?'rgba(93,202,165,0.22)':'rgba(127,119,221,0.28)');g.appendChild(gl);
+    }
+    var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',n.x);c.setAttribute('cy',n.y);c.setAttribute('r',r);
+    c.setAttribute('fill',done?'#5DCAA5':act?'#7F77DD':'rgba(180,160,80,0.45)');
+    c.setAttribute('stroke',done?'#1D9E75':act?'#534AB7':'rgba(180,160,80,0.3)');
+    c.setAttribute('stroke-width','1.5');g.appendChild(c);
+    if(i<LVL.length){
+      var t=document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x',n.x);t.setAttribute('y',n.y+3.5);t.setAttribute('text-anchor','middle');t.setAttribute('font-size','7.5');
+      t.setAttribute('fill',done?'#fff':act?'#fff':'rgba(220,200,100,0.6)');t.textContent=LVL[i].label;g.appendChild(t);
+    } else {
+      var t2=document.createElementNS('http://www.w3.org/2000/svg','text');
+      t2.setAttribute('x',n.x);t2.setAttribute('y',n.y+4.5);t2.setAttribute('text-anchor','middle');t2.setAttribute('font-size','11');
+      t2.setAttribute('fill','#EF9F27');t2.textContent='★';g.appendChild(t2);
+    }
+  });
+}
+
+function renderHero(){
+  var g=document.getElementById('hero-g');if(!g)return;g.innerHTML='';
+  var hx=heroPos.x,hy=heroPos.y;
+  var bob=heroWalking?Math.sin(heroAnim*0.28)*2.5:0;
+  var ls=heroWalking?Math.sin(heroAnim*0.28)*9:0;
+  var as=heroWalking?Math.sin(heroAnim*0.28)*7:0;
+  var ns=document.createElementNS.bind(document,'http://www.w3.org/2000/svg');
+  function ln(x1,y1,x2,y2,s,w){
+    var l=ns('line');l.setAttribute('x1',x1);l.setAttribute('y1',y1);
+    l.setAttribute('x2',x2);l.setAttribute('y2',y2);
+    l.setAttribute('stroke',s);l.setAttribute('stroke-width',w);
+    l.setAttribute('stroke-linecap','round');g.appendChild(l);
+  }
+  ln(hx-4,hy+bob+5,hx-4+ls,hy+bob+16,'#3C3489',2.5);
+  ln(hx+4,hy+bob+5,hx+4-ls,hy+bob+16,'#3C3489',2.5);
+  ln(hx-8,hy+bob-3,hx-13-as,hy+bob+5,'#534AB7',2);
+  ln(hx+8,hy+bob-3,hx+13+as,hy+bob+5,'#534AB7',2);
+  var body=ns('ellipse');body.setAttribute('cx',hx);body.setAttribute('cy',hy+bob);
+  body.setAttribute('rx','8');body.setAttribute('ry','9');body.setAttribute('fill','#534AB7');g.appendChild(body);
+  var glow=ns('circle');glow.setAttribute('cx',hx);glow.setAttribute('cy',hy+bob-13);
+  glow.setAttribute('r','13');glow.setAttribute('fill','rgba(127,119,221,0.18)');g.appendChild(glow);
+  var head=ns('circle');head.setAttribute('cx',hx);head.setAttribute('cy',hy+bob-13);
+  head.setAttribute('r','9');head.setAttribute('fill','#FAEEDA');g.appendChild(head);
+  var e1=ns('circle');e1.setAttribute('cx',hx-3);e1.setAttribute('cy',hy+bob-14);
+  e1.setAttribute('r','1.8');e1.setAttribute('fill','#333');g.appendChild(e1);
+  var e2=ns('circle');e2.setAttribute('cx',hx+3);e2.setAttribute('cy',hy+bob-14);
+  e2.setAttribute('r','1.8');e2.setAttribute('fill','#333');g.appendChild(e2);
+  var sm=ns('path');
+  sm.setAttribute('d','M'+(hx-3)+','+(hy+bob-9)+' Q'+hx+','+(hy+bob-6.5)+' '+(hx+3)+','+(hy+bob-9));
+  sm.setAttribute('stroke','#555');sm.setAttribute('stroke-width','1.2');sm.setAttribute('fill','none');g.appendChild(sm);
+}
+
+function walkTo(target,cb){
+  heroWalking=true;
+  var start={x:heroPos.x,y:heroPos.y},end=nodes[target];
+  var prog=0;
+  function step(){
+    heroAnim++;prog=Math.min(1,prog+0.035);
+    var e=prog<.5?2*prog*prog:1-Math.pow(-2*prog+2,2)/2;
+    heroPos.x=start.x+(end.x-start.x)*e;
+    heroPos.y=start.y+(end.y-start.y)*e;
+    renderHero();
+    if(prog<1){requestAnimationFrame(step);}
+    else{heroWalking=false;heroPos={x:end.x,y:end.y};renderHero();if(cb)cb();}
+  }
+  requestAnimationFrame(step);
+}
+
+function updateHUD(){
+  var ep=Math.max(0,Math.round(G.en)),tp=Math.max(0,G.tm),sp=Math.min(100,Math.round(G.st));
+  document.getElementById('h-en').textContent=ep+'%';
+  document.getElementById('h-tm').textContent=tp.toFixed(1)+'ч';
+  document.getElementById('h-mo').textContent=fmt(G.mo);
+  document.getElementById('h-sv').textContent=fmt(G.sv);
+  document.getElementById('h-st').textContent=sp+'%';
+  var fe=document.getElementById('hf-en');
+  fe.style.width=ep+'%';fe.style.background=ep>60?'#5DCAA5':ep>30?'#EF9F27':'#E24B4A';
+  document.getElementById('hf-tm').style.width=(tp/8*100)+'%';
+  document.getElementById('hf-mo').style.width=Math.min(100,G.mo/(G.rate*8)*100)+'%';
+  document.getElementById('hf-sv').style.width=Math.min(100,G.sv/(G.rate*8)*100)+'%';
+  document.getElementById('hf-st').style.width=sp+'%';
+}
+
+function showLevel(){
+  if(G.step>=LVL.length){walkTo(NN-1,showFinal);return;}
+  var lv=LVL[G.step];
+  drawSky(G.step);
+  walkTo(G.step,function(){
+    renderNodes(G.step);
+    var mo=Math.round(lv.mult*G.rate);
+    var MC={
+      time:{bg:'#2a0a0a',bc:'rgba(226,75,74,0.4)',tc:'#f09595'},
+      money:{bg:'#2a1500',bc:'rgba(186,117,23,0.4)',tc:'#FAC775'},
+      energy:{bg:'#1a1535',bc:'rgba(127,119,221,0.4)',tc:'#AFA9EC'},
+      stress:{bg:'#2a0a1a',bc:'rgba(212,83,126,0.4)',tc:'#ED93B1'}
+    };
+    var mc=MC[lv.mt]||MC.time;
+    document.getElementById('level-area').innerHTML=
+      '<div class="scene">'+
+        '<div class="sc-top">'+
+          '<div class="sc-icon">'+lv.icon+'</div>'+
+          '<div class="sc-meta">'+
+            '<div class="sc-step">Задача '+(G.step+1)+' из '+LVL.length+' · '+lv.who+'</div>'+
+            '<div class="sc-title">'+lv.task+'</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="mbar" style="background:'+mc.bg+';border-color:'+mc.bc+'">'+
+          '<div class="mface">'+lv.mf+'</div>'+
+          '<div style="flex:1">'+
+            '<div class="mn" style="color:'+mc.tc+'">'+lv.mn+' появился!</div>'+
+            '<div class="md" style="color:'+mc.tc+'">'+lv.md+'</div>'+
+            '<div class="mtags">'+
+              '<span class="mtag" style="background:rgba(65,36,2,0.8);color:#FAC775">−'+lv.tc+' ч</span>'+
+              '<span class="mtag" style="background:rgba(80,19,19,0.8);color:#F09595">−'+fmt(mo)+' ₽ именно твоих</span>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="choices">'+
+          '<button class="cbtn" onclick="choose(false,'+mo+')">Делаю сам, вручную</button>'+
+          '<button class="cbtn ai" onclick="choose(true,'+mo+')">Использую нейросети ✓</button>'+
+        '</div>'+
+        '<div class="result" id="res"></div>'+
+        '<button class="next-btn" id="next-btn" onclick="goNext()">Следующая задача →</button>'+
+      '</div>';
+  });
+}
+
+function choose(isAI,mo){
+  document.querySelectorAll('.cbtn').forEach(function(b){b.disabled=true;});
+  var lv=LVL[G.step];
+  var res=document.getElementById('res');res.style.display='block';
+  if(isAI){
+    res.className='result good';
+    res.textContent='✓ '+lv.good+' Сэкономлено: '+fmt(mo)+' ₽ и '+lv.tc+' ч твоего времени!';
+    G.sv+=mo;G.tm=Math.max(0,G.tm-lv.tc*0.1);G.en=Math.max(0,G.en-2);
+  } else {
+    G.bad++;res.className='result bad';
+    res.textContent='✗ '+lv.bad+' Потери: −'+fmt(mo)+' ₽ и −'+lv.tc+' ч твоей жизни.';
+    G.tm=Math.max(0,G.tm-lv.tc);G.mo+=mo;G.en=Math.max(0,G.en-lv.en);G.st=Math.min(100,G.st+lv.st);
+  }
+  updateHUD();
+  document.getElementById('next-btn').style.display='block';
+}
+
+function goNext(){G.step++;showLevel();}
+
+function showFinal(){
+  drawSky(SKIES.length-1);
+  document.getElementById('level-area').innerHTML='';
+  var fin=document.getElementById('final-box');fin.style.display='block';
+  var mM=G.mo*22,mY=mM*12,sY=G.sv*22*12;
+  var title,sub,mentor;
+  if(G.bad===0){
+    title='Идеальный день — ты ИИ-мастер!';
+    sub='Монстры не получили ни кусочка. Максимальная экономия!';
+    mentor='Ты уже думаешь как ИИ-специалист. Теперь выстроим системный стек под все задачи твоего бизнеса!';
+  } else if(G.bad<=3){
+    title='Неплохо, но монстры кусались!';
+    sub=G.bad+' задачи достались монстрам. Посмотри на разницу.';
+    mentor='Хаотичный подход даёт 20% результата. Системный — все 80%. Одна консультация изменит подход навсегда!';
+  } else {
+    title='Монстры устроили пир!';
+    sub='Так выглядит обычный день без нейросетей. Каждый день, год за годом.';
+    mentor='Люди работают в 3 раза больше просто потому что не знают с чего начать. Одна встреча — и завтра уже иначе!';
+  }
+  fin.innerHTML=
+    '<div class="f-title">'+title+'</div>'+
+    '<div class="f-sub">'+sub+'</div>'+
+    '<div class="sgrid">'+
+      '<div class="scard"><div class="scard-l">Потеряно за день</div><div class="scard-v red">'+fmt(G.mo)+' ₽</div><div class="scard-n">'+((8-Math.max(0,G.tm)).toFixed(1))+' ч твоего времени</div></div>'+
+      '<div class="scard"><div class="scard-l">Потери в месяц</div><div class="scard-v red">'+fmt(mM)+' ₽</div><div class="scard-n">'+Math.round((8-G.tm)*22)+' часов</div></div>'+
+      '<div class="scard"><div class="scard-l">Сэкономлено за день</div><div class="scard-v grn">'+fmt(G.sv)+' ₽</div><div class="scard-n">благодаря нейросетям</div></div>'+
+      '<div class="scard"><div class="scard-l">Экономия за год</div><div class="scard-v grn">'+fmt(sY)+' ₽</div><div class="scard-n">если внедрить сейчас</div></div>'+
+    '</div>'+
+    '<div class="mrow"><div class="mava">✦</div><div><div class="mname">Айна — ИИ-наставник</div><div class="mtext">'+mentor+'</div></div></div>'+
+    '<div class="cta-wrap">'+
+      '<div class="cta-title">Записаться к Айне на консультацию</div>'+
+      '<div class="cta-sub">Разберём твои задачи и внедрим нейросети в работу — быстро и без лишней техники</div>'+
+      '<div class="cta-btns">'+
+        '<button class="ctabtn tg" onclick="window.open(\'https://t.me/aina_gard\',\'_blank\')">✈ Telegram</button>'+
+        '<button class="ctabtn wa" onclick="window.open(\'https://wa.me/79025288988\',\'_blank\')">💬 WhatsApp</button>'+
+        '<button class="ctabtn mx" onclick="window.open(\'https://max.ru/u/f9LHodD0cOJ9M7ihd0JN_z55Xv85Hj26fN2-tUCrxDsLmAWDfJanUYv8sJw\',\'_blank\')">★ MAX</button>'+
+      '</div>'+
+    '</div>'+
+    '<button class="rbtn" onclick="restartGame()">↺ Сыграть ещё раз</button>';
+}
+
+function startGame(){
+  var v=Math.max(50,parseInt(document.getElementById('hour-val').value)||500);
+  G={step:0,en:100,tm:8,mo:0,sv:0,st:0,bad:0,rate:v};
+  heroPos={x:nodes[0].x,y:nodes[0].y};
+  document.getElementById('intro-screen').style.display='none';
+  document.getElementById('game-screen').style.display='block';
+  document.getElementById('final-box').style.display='none';
+  var PD=buildP();
+  document.getElementById('rp1').setAttribute('d',PD);
+  document.getElementById('rp2').setAttribute('d',PD);
+  drawSky(0);renderNodes(0);renderHero();updateHUD();showLevel();
+}
+
+function restartGame(){
+  document.getElementById('final-box').style.display='none';
+  document.getElementById('game-screen').style.display='none';
+  document.getElementById('intro-screen').style.display='block';
+  document.getElementById('hour-val').value=500;
+  document.getElementById('month-num').textContent=fmt(500*8*22);
+  G={step:0,en:100,tm:8,mo:0,sv:0,st:0,bad:0,rate:500};
+  heroPos={x:nodes[0].x,y:nodes[0].y};
+}
+</script>
+</body>
+</html>
